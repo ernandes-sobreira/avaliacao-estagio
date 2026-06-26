@@ -247,8 +247,8 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
   <div class="pdf-salvo" id="pdf_salvo_info">✅ PDF assinado salvo! Pronto para enviar à coordenação.</div>
   <div class="bts">
     <button class="btn" style="background:#0f766e;color:#fff" onclick="salvarA('apenas')">💾 Salvar</button>
-    <button class="btn bp" onclick="salvarA('docx')">📄 Baixar Word (.doc)</button>
-    <button class="btn bg" onclick="salvarA('pdf')">📑 Gerar PDF (imprimir)</button>
+    
+    <button class="btn bg" onclick="salvarA('pdf')">📑 Gerar PDF</button>
     <button class="btn" style="background:#6366f1;color:#fff" onclick="abrirGovBr()">✎ Assinar pelo gov.br</button>
     <button class="btn bs" onclick="limA()">Limpar</button>
   </div>
@@ -511,178 +511,128 @@ function coletarA(){
 function validA(d){return d.estagiario&&d.local&&d.supervisor&&d.avaliador&&d.cargo;}
 
 // ============================================================
-// CONSTRUTOR HTML DO FORMULÁRIO — design profissional
+// CONSTRUTOR HTML DO FORMULÁRIO (para PDF via print)
 // ============================================================
 function buildFormHtml(d, avMap){
   var hashId='EST-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase();
-  var geradoEm=new Date().toLocaleString('pt-BR');
-
-  // ── Linha de critério ──
-  function row(item, num, isA3){
-    var av=avMap[item.id]||'';
-    var marcas=['O','B','R','I'].map(function(o){
-      var ativo=av===o;
-      var cor=ativo?({O:'#16a34a',B:'#2563eb',R:'#d97706',I:'#dc2626'}[o]):'transparent';
-      var brd=ativo?cor:('#9ca3af');
-      return '<td style="width:32px;text-align:center;padding:6px 2px">'+
-        '<div style="width:20px;height:20px;border-radius:50%;border:2px solid '+brd+';background:'+cor+';margin:0 auto;display:flex;align-items:center;justify-content:center">'+
-        (ativo?'<span style="color:white;font-size:9px;font-weight:900;line-height:1">'+o+'</span>':'')+
-        '</div></td>';
-    }).join('');
-    var numCell='<td style="width:30px;text-align:center;padding:7px 4px;font-weight:800;color:#166534;font-size:9.5pt;vertical-align:top;padding-top:9px">'+num+'</td>';
-    var txtCell=isA3
-      ? '<td style="padding:7px 10px;font-size:9pt;line-height:1.4;vertical-align:top"><span style="font-weight:700;color:#1e3a2f">'+item.titulo+'</span><br><span style="color:#4b5563;font-size:8.5pt">'+item.label+'</span></td>'
-      : '<td style="padding:7px 10px;font-size:9pt;line-height:1.4;vertical-align:top">'+item.label+'</td>';
-    return '<tr style="background:'+(num%2===0?'#f0faf4':'#ffffff')+'">'+numCell+txtCell+marcas+'</tr>';
-  }
-
   var css=`<style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#1a2332;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pg{max-width:700px;margin:0 auto;padding:14mm 16mm 12mm}
-/* Cabeçalho institucional */
+.pg{max-width:700px;margin:0 auto;padding:12mm 14mm 10mm}
 .inst-top{display:flex;align-items:flex-start;gap:14px;border-bottom:3px solid #166534;padding-bottom:10px;margin-bottom:12px}
-.inst-escudo{width:56px;height:56px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
-.inst-txt{flex:1}
-.inst-txt .gov{font-size:7pt;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
+.inst-escudo{width:48px;height:48px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.inst-txt .gov{font-size:7pt;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
 .inst-txt .univ{font-size:9.5pt;font-weight:800;color:#14532d;line-height:1.2;margin-bottom:1px}
 .inst-txt .campus{font-size:8pt;color:#374151;font-weight:600}
-/* Badge do anexo */
-.anexo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.anexo-badge{background:#166534;color:#fff;font-size:9pt;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:.5px}
-.form-title{font-size:11pt;font-weight:700;color:#1a2332;line-height:1.3}
-/* Dados do estágio */
-.dados-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid #d1fae5;border-radius:8px;overflow:hidden;margin-bottom:10px}
+.anexo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.anexo-badge{background:#166534;color:#fff;font-size:9pt;font-weight:800;padding:3px 13px;border-radius:20px}
+.form-title{font-size:11pt;font-weight:700;color:#1a2332}
+.dados-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid #d1fae5;border-radius:7px;overflow:hidden;margin-bottom:10px}
 .dado-cell{padding:5px 10px;border-right:1px solid #d1fae5;border-bottom:1px solid #d1fae5}
 .dado-cell:nth-child(3n){border-right:none}
 .dado-cell.span2{grid-column:span 2}
 .dado-cell.span3{grid-column:span 3}
 .dado-cell:nth-last-child(-n+3){border-bottom:none}
-.dado-label{font-size:6.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#059669;margin-bottom:2px}
+.dado-label{font-size:6.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#059669;margin-bottom:1px}
 .dado-val{font-size:9.5pt;font-weight:600;color:#111827}
-/* Tabela de avaliação */
 .section-title{font-size:8.5pt;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 4px;padding-left:8px;border-left:3px solid #22c55e}
-table.avl{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;border:1.5px solid #d1fae5}
+.legenda{display:flex;gap:12px;margin-bottom:6px;flex-wrap:wrap;font-size:7.5pt}
+.leg-item{display:flex;align-items:center;gap:4px;color:#374151;font-weight:600}
+.leg-dot{width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:900;color:#fff}
+table.avl{width:100%;border-collapse:collapse;border-radius:7px;overflow:hidden;border:1.5px solid #d1fae5}
 table.avl thead tr{background:#166534}
-table.avl thead th{color:#fff;padding:7px 8px;font-size:8pt;font-weight:700;text-align:center}
+table.avl thead th{color:#fff;padding:6px 8px;font-size:8pt;font-weight:700;text-align:center}
 table.avl thead th:nth-child(2){text-align:left}
 table.avl tbody tr{border-bottom:1px solid #e5e7eb}
+table.avl tbody tr:nth-child(even){background:#f0faf4}
 table.avl tbody tr:last-child{border-bottom:none}
-/* Legenda */
-.legenda{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap}
-.leg-item{display:flex;align-items:center;gap:4px;font-size:7.5pt;color:#374151;font-weight:600}
-.leg-dot{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:900;color:#fff}
-/* Nota */
 .nota-row{display:flex;align-items:center;gap:14px;background:#fefce8;border:1.5px solid #fde68a;border-radius:8px;padding:7px 14px;margin:8px 0}
 .nota-label{font-size:9.5pt;font-weight:700;color:#78350f}
-.nota-valor{font-size:20pt;font-weight:900;color:#d97706;min-width:48px;text-align:center}
-.nota-hint{font-size:8pt;color:#92400e}
-/* Comentários */
-.coment-box{border:1.5px solid #d1fae5;border-radius:6px;padding:9px 11px;min-height:44px;font-size:9pt;color:#374151;margin-bottom:10px;background:#f0faf4}
-/* Assinatura */
+.nota-valor{font-size:20pt;font-weight:900;color:#d97706;min-width:44px;text-align:center}
+.nota-hint{font-size:8pt;color:#92400e;font-style:italic}
+.coment-box{border:1.5px solid #d1fae5;border-radius:6px;padding:7px 11px;min-height:36px;font-size:9pt;color:#374151;margin-bottom:8px;background:#f0faf4}
 .sig-area{margin-top:12px;padding-top:8px;border-top:2px dashed #d1fae5}
 .sig-data{font-size:8.5pt;color:#374151;margin-bottom:8px}
 .sig-linha{border-bottom:1.5px solid #374151;width:280px;height:28px}
 .sig-nome{margin-top:4px;font-size:9pt;font-weight:700;color:#1a2332}
 .sig-cargo{font-size:8pt;color:#4b5563}
 .sig-cpf{font-size:7.5pt;color:#6b7280}
-/* Coordenação */
-.coord-block{margin-top:12px;padding:8px 12px;background:#f0faf4;border-radius:6px;border-left:3px solid #22c55e;font-size:7.5pt;color:#374151;text-align:center}
-/* Rodapé */
-.doc-footer{margin-top:14px;padding:6px 10px;background:#f9fafb;border-radius:5px;border:1px solid #e5e7eb;font-size:6.5pt;color:#9ca3af;text-align:center;font-family:'Courier New',monospace}
-/* Print */
+.coord-block{margin-top:10px;padding:7px 12px;background:#f0faf4;border-radius:6px;border-left:3px solid #22c55e;font-size:7.5pt;color:#374151;text-align:center}
+.doc-footer{margin-top:12px;padding:5px 10px;background:#f9fafb;border-radius:5px;border:1px solid #e5e7eb;font-size:6.5pt;color:#9ca3af;text-align:center;font-family:monospace}
 @page{margin:10mm}
-@media print{
-  body{background:#fff}
-  .pg{padding:8mm 10mm}
-  .inst-escudo{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
+@media print{body{background:#fff}.pg{padding:8mm 10mm}}
 </style>`;
 
-  var instHeader=`<div class="inst-top">
-    <div class="inst-escudo">🌿</div>
-    <div class="inst-txt">
-      <div class="gov">Governo do Estado de Mato Grosso &middot; Secretaria de Estado de Ciência e Tecnologia</div>
-      <div class="univ">Universidade do Estado de Mato Grosso &mdash; UNEMAT</div>
-      <div class="campus">Campus Universitário de Cáceres &middot; Faculdade de Ciências Agrárias e Biológicas &middot; Coordenação de Ciências Biológicas</div>
-    </div>
-  </div>`;
+  var instHeader='<div class="inst-top"><div class="inst-escudo">🌿</div><div class="inst-txt"><div class="gov">Governo do Estado de Mato Grosso · Secretaria de Estado de Ciência e Tecnologia</div><div class="univ">Universidade do Estado de Mato Grosso &mdash; UNEMAT</div><div class="campus">Campus Universitário de Cáceres · Faculdade de Ciências Agrárias e Biológicas · Coordenação de Ciências Biológicas</div></div></div>';
 
-  var dadosBlock=`<div class="dados-grid">
-    <div class="dado-cell span3"><div class="dado-label">Estagiário(a)</div><div class="dado-val">`+d.estagiario+`</div></div>
-    <div class="dado-cell"><div class="dado-label">Período Letivo</div><div class="dado-val">`+d.periodo+`</div></div>
-    <div class="dado-cell"><div class="dado-label">Carga Horária</div><div class="dado-val">`+(d.carga||'—')+` h</div></div>
-    <div class="dado-cell"><div class="dado-label">Supervisor(a)</div><div class="dado-val">`+d.supervisor+`</div></div>
-    <div class="dado-cell"><div class="dado-label">Início do Estágio</div><div class="dado-val">`+d.ini+`</div></div>
-    <div class="dado-cell"><div class="dado-label">Término do Estágio</div><div class="dado-val">`+d.fim+`</div></div>
-    <div class="dado-cell span3"><div class="dado-label">Local do Estágio</div><div class="dado-val">`+d.local+`</div></div>
-  </div>`;
+  var dadosBlock='<div class="dados-grid">'+
+    '<div class="dado-cell span3"><div class="dado-label">Estagiário(a)</div><div class="dado-val">'+d.estagiario+'</div></div>'+
+    '<div class="dado-cell"><div class="dado-label">Período Letivo</div><div class="dado-val">'+d.periodo+'</div></div>'+
+    '<div class="dado-cell"><div class="dado-label">Carga Horária</div><div class="dado-val">'+(d.carga||'—')+' h</div></div>'+
+    '<div class="dado-cell"><div class="dado-label">Supervisor(a)</div><div class="dado-val">'+d.supervisor+'</div></div>'+
+    '<div class="dado-cell"><div class="dado-label">Início</div><div class="dado-val">'+d.ini+'</div></div>'+
+    '<div class="dado-cell"><div class="dado-label">Término</div><div class="dado-val">'+d.fim+'</div></div>'+
+    '<div class="dado-cell span3"><div class="dado-label">Local do Estágio</div><div class="dado-val">'+d.local+'</div></div>'+
+    '</div>';
 
-  var legenda=`<div class="legenda">
-    <div class="leg-item"><div class="leg-dot" style="background:#16a34a">O</div> Ótimo</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#2563eb">B</div> Bom</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#d97706">R</div> Regular</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#dc2626">I</div> Insuficiente</div>
-  </div>`;
+  var legenda='<div class="legenda">'+
+    '<div class="leg-item"><div class="leg-dot" style="background:#16a34a">O</div> Ótimo</div>'+
+    '<div class="leg-item"><div class="leg-dot" style="background:#2563eb">B</div> Bom</div>'+
+    '<div class="leg-item"><div class="leg-dot" style="background:#d97706">R</div> Regular</div>'+
+    '<div class="leg-item"><div class="leg-dot" style="background:#dc2626">I</div> Insuficiente</div>'+
+    '</div>';
 
-  var tblHeaderA2=`<table class="avl"><thead><tr>
-    <th style="width:30px">#</th>
-    <th style="text-align:left">Aspecto avaliado</th>
-    <th style="width:32px">O</th><th style="width:32px">B</th><th style="width:32px">R</th><th style="width:32px">I</th>
-  </tr></thead><tbody>`;
+  function row(item,num,isA3){
+    var av=avMap[item.id]||'';
+    var cells=['O','B','R','I'].map(function(o){
+      var ativo=av===o;
+      var cor=ativo?({O:'#16a34a',B:'#2563eb',R:'#d97706',I:'#dc2626'}[o]):'transparent';
+      var brd=ativo?cor:'#9ca3af';
+      return '<td style="width:28px;text-align:center;padding:5px 2px">'+
+        '<div style="width:18px;height:18px;border-radius:50%;border:2px solid '+brd+';background:'+cor+';margin:0 auto;display:flex;align-items:center;justify-content:center">'+
+        (ativo?'<span style="color:white;font-size:8px;font-weight:900">'+o+'</span>':'')+
+        '</div></td>';
+    }).join('');
+    var txt=isA3?('<strong>'+item.titulo+'</strong> <span style="color:#6b7280;font-size:8pt">'+item.label+'</span>'):item.label;
+    return '<tr><td style="width:26px;text-align:center;font-weight:700;color:#166534;font-size:9pt;padding:6px 4px">'+num+'</td><td style="padding:6px 10px;font-size:9pt">'+txt+'</td>'+cells+'</tr>';
+  }
 
-  var tblHeaderA3=`<table class="avl"><thead><tr>
-    <th style="width:30px">#</th>
-    <th style="text-align:left">Aspecto técnico-profissional</th>
-    <th style="width:32px">O</th><th style="width:32px">B</th><th style="width:32px">R</th><th style="width:32px">I</th>
-  </tr></thead><tbody>`;
+  var tblA2='<table class="avl"><thead><tr><th style="width:26px">#</th><th style="text-align:left">Aspecto avaliado</th><th style="width:28px">O</th><th style="width:28px">B</th><th style="width:28px">R</th><th style="width:28px">I</th></tr></thead><tbody>'+
+    CRITERIOS_A2.map(function(item,i){return row(item,i+1,false);}).join('')+'</tbody></table>';
 
-  var rowsA2=CRITERIOS_A2.map(function(item,i){return row(item,i+1,false);}).join('');
-  var rowsA3=CRITERIOS_A3.map(function(item,i){return row(item,String.fromCharCode(97+i),true);}).join('');
+  var tblA3='<table class="avl"><thead><tr><th style="width:26px">#</th><th style="text-align:left">Aspecto técnico-profissional</th><th style="width:28px">O</th><th style="width:28px">B</th><th style="width:28px">R</th><th style="width:28px">I</th></tr></thead><tbody>'+
+    CRITERIOS_A3.map(function(item,i){return row(item,String.fromCharCode(97+i),true);}).join('')+'</tbody></table>';
 
-  var sigBlock=`<div class="sig-area">
-    <div class="sig-data">Cáceres-MT, `+d.dataAval+`</div>
-    <div class="sig-linha"></div>
-    <div class="sig-nome">`+d.avaliador+`</div>
-    <div class="sig-cargo">`+d.cargo+`</div>
-    `+(d.cpf?'<div class="sig-cpf">CPF: '+d.cpf+'</div>':'')+`
-  </div>`;
+  var sig='<div class="sig-area"><div class="sig-data">Cáceres-MT, '+d.dataAval+'</div>'+
+    '<div class="sig-linha"></div>'+
+    '<div class="sig-nome">'+d.avaliador+'</div>'+
+    '<div class="sig-cargo">'+d.cargo+'</div>'+
+    (d.cpf?'<div class="sig-cpf">CPF: '+d.cpf+'</div>':'')+
+    '</div>';
 
-  var footer=`<div class="doc-footer">ID: `+hashId+` &middot; Gerado em: `+geradoEm+` &middot; Assinatura digital: assinador.iti.br</div>`;
+  var footer='<div class="doc-footer">ID: '+hashId+' &middot; Gerado em: '+new Date().toLocaleString('pt-BR')+' &middot; assinador.iti.br</div>';
 
-  var pg1=`<div class="pg">`+instHeader+
-    `<div class="anexo-wrap"><span class="anexo-badge">ANEXO II</span><span class="form-title">Ficha de Avaliação do(a) Estagiário(a)</span></div>`+
-    dadosBlock+
-    `<div class="section-title">Critérios de Avaliação</div>`+
-    legenda+
-    tblHeaderA2+rowsA2+`</tbody></table>`+
-    `<div class="section-title" style="margin-top:12px">Comentários e/ou Sugestões do Supervisor</div>`+
-    `<div class="coment-box">`+(d.comentarios||'&nbsp;')+`</div>`+
-    `<div class="nota-row"><span class="nota-label">Nota Final (0–10):</span><span class="nota-valor">`+(d.nota2||'—')+`</span><span class="nota-hint">Atribuída pelo supervisor de campo</span></div>`+
-    sigBlock+footer+`</div>`;
+  var pg1='<div class="pg">'+instHeader+
+    '<div class="anexo-wrap"><span class="anexo-badge">ANEXO II</span><span class="form-title">Ficha de Avaliação do(a) Estagiário(a)</span></div>'+
+    dadosBlock+'<div class="section-title">Critérios de Avaliação</div>'+legenda+tblA2+
+    '<div class="section-title" style="margin-top:10px">Comentários e/ou Sugestões do Supervisor</div>'+
+    '<div class="coment-box">'+(d.comentarios||'&nbsp;')+'</div>'+
+    '<div class="nota-row"><span class="nota-label">Nota Final (0–10):</span><span class="nota-valor">'+(d.nota2||'—')+'</span><span class="nota-hint">Atribuída pelo supervisor de campo</span></div>'+
+    sig+footer+'</div>';
 
-  var pg2=`<div class="pg">`+instHeader+
-    `<div class="anexo-wrap"><span class="anexo-badge">ANEXO III</span><span class="form-title">Ficha de Avaliação do(a) Estagiário(a)</span></div>`+
-    dadosBlock+
-    `<div class="section-title">Critérios Técnico-Profissionais</div>`+
-    legenda+
-    tblHeaderA3+rowsA3+`</tbody></table>`+
-    `<div class="nota-row"><span class="nota-label">Nota Final (0–10):</span><span class="nota-valor">`+(d.nota3||'—')+`</span><span class="nota-hint">Atribuída pelo supervisor acadêmico</span></div>`+
-    `<div class="coord-block">Coordenação do Curso de Ciências Biológicas &ndash; Campus Cáceres<br>Av. São João, n° 563 &ndash; Cavalhada &ndash; Cáceres-MT &ndash; CEP 78.200-000 &ndash; Tel. (65) 3221-0538 &ndash; biologia@unemat.br</div>`+
-    sigBlock+footer+`</div>`;
+  var pg2='<div class="pg">'+instHeader+
+    '<div class="anexo-wrap"><span class="anexo-badge">ANEXO III</span><span class="form-title">Ficha de Avaliação do(a) Estagiário(a)</span></div>'+
+    dadosBlock+'<div class="section-title">Critérios Técnico-Profissionais</div>'+legenda+tblA3+
+    '<div class="nota-row"><span class="nota-label">Nota Final (0–10):</span><span class="nota-valor">'+(d.nota3||'—')+'</span><span class="nota-hint">Atribuída pelo supervisor acadêmico</span></div>'+
+    '<div class="coord-block">Coordenação do Curso de Ciências Biológicas &ndash; Campus Cáceres<br>Av. São João, nº 563 &ndash; Cavalhada &ndash; Cáceres-MT &ndash; Tel. (65) 3221-0538 &ndash; biologia@unemat.br</div>'+
+    sig+footer+'</div>';
 
-  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
-    '<meta name="viewport" content="width=device-width,initial-scale=1.0">'+
-    '<title>Avaliação de Estágio — '+d.estagiario+'</title>'+
-    css+'</head><body>'+
-    pg1+
-    '<div style="page-break-after:always"></div>'+
-    pg2+
-    '</body></html>';
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Avaliação de Estágio &mdash; '+d.estagiario+'</title>'+css+'</head><body>'+pg1+'<div style="page-break-after:always"></div>'+pg2+'</body></html>';
 }
+
 // ============================================================
-// GERAR PDF — abre janela com botão imprimir/salvar como PDF
+// GERAR PDF — abre janela para imprimir/salvar como PDF
 // ============================================================
 function gerarPDFA(d){
   ldgOn('Preparando PDF...');
@@ -692,206 +642,80 @@ function gerarPDFA(d){
   var win=window.open(url,'_blank');
   ldgOff();
   if(!win){
-    // fallback para mobile: download do HTML
-    var a=document.createElement('a');
-    a.href=url;
+    var a=document.createElement('a');a.href=url;
     a.download='Avaliacao_Estagio_'+(d.estagiario||'').replace(/\s+/g,'_')+'.html';
     document.body.appendChild(a);a.click();document.body.removeChild(a);
-    tk('Arquivo HTML baixado. Abra e use Compartilhar > Imprimir para salvar como PDF.','inf');
+    tk('Arquivo HTML baixado. Abra e use Imprimir para salvar como PDF.','inf');
   } else {
     setTimeout(function(){win.print();},600);
-    tk('Janela aberta. Use Imprimir > Salvar como PDF para gerar o PDF.','ok');
+    tk('Use Imprimir > Salvar como PDF.','ok');
   }
   setTimeout(function(){URL.revokeObjectURL(url);},30000);
 }
 
-
 // ============================================================
-// GERAR WORD REAL (.docx) via docx.js UMD
+// GERAR DOCX REAL via docx.js (CDN UMD)
 // ============================================================
-function gerarDocxA(d) {
-  if (typeof docx === 'undefined') {
-    tk('Biblioteca docx.js não carregada. Verifique sua conexão.', 'err');
-    ldgOff();
-    return;
-  }
+function gerarDocxA(d){
+  if(typeof docx==='undefined'){tk('Biblioteca docx.js não carregada.','err');return;}
   ldgOn('Gerando Word...');
-  try {
-    var _d = d;
-    var avMap = avaliacoes;
-    var D = docx;
-    var AlignmentType = D.AlignmentType;
-    var BorderStyle = D.BorderStyle;
-    var WidthType = D.WidthType;
-    var ShadingType = D.ShadingType;
-    var VerticalAlign = D.VerticalAlign;
-    var Document = D.Document;
-    var Packer = D.Packer;
-    var Paragraph = D.Paragraph;
-    var TextRun = D.TextRun;
-    var Table = D.Table;
-    var TableRow = D.TableRow;
-    var TableCell = D.TableCell;
-
-    var GR = '166534', GRL = 'E8F5EE', GRM = '2D7A52', AMB = 'E8A020';
-    var PAGE_W = 11906, MARGIN = 900, CONTENT_W = PAGE_W - MARGIN * 2;
+  try{
+    var _d=d,D=docx,A=D.AlignmentType,BS=D.BorderStyle,W=D.WidthType,ST=D.ShadingType,VA=D.VerticalAlign;
+    var GR='166534',GRM='2D7A52',AMB='E8A020';
+    var PW=11906,M=900,CW=PW-M*2;
     function pt(n){return n*20;}
-    var BORDER_NONE = {style:BorderStyle.NONE,size:0,color:'FFFFFF'};
-    var NO_BORDERS = {top:BORDER_NONE,bottom:BORDER_NONE,left:BORDER_NONE,right:BORDER_NONE};
-    var CELL_B = {top:{style:BorderStyle.SINGLE,size:1,color:'D1FAE5'},bottom:{style:BorderStyle.SINGLE,size:1,color:'D1FAE5'},left:{style:BorderStyle.SINGLE,size:1,color:'D1FAE5'},right:{style:BorderStyle.SINGLE,size:1,color:'D1FAE5'}};
-    var marginProps = {top:1134,right:900,bottom:1134,left:900};
-    var hashId = 'EST-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
-
-    function instHeader(){
-      return [
-        new Paragraph({spacing:{before:0,after:40},border:{bottom:{style:BorderStyle.SINGLE,size:8,color:GRM}},children:[new TextRun({text:'GOVERNO DO ESTADO DE MATO GROSSO · SECRETARIA DE ESTADO DE CIÊNCIA E TECNOLOGIA',font:'Arial',size:pt(7),color:'6B7280',bold:true})]}),
-        new Paragraph({spacing:{before:60,after:20},children:[new TextRun({text:'Universidade do Estado de Mato Grosso — UNEMAT',font:'Arial',size:pt(11),bold:true,color:'14532D'})]}),
-        new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:'Campus Universitário de Cáceres · Faculdade de Ciências Agrárias e Biológicas · Coordenação de Ciências Biológicas',font:'Arial',size:pt(8.5),color:'374151'})]}),
-      ];
-    }
-
-    function anexoBadge(num){
-      return new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:[1200,CONTENT_W-1200],
-        borders:{top:BORDER_NONE,bottom:BORDER_NONE,left:BORDER_NONE,right:BORDER_NONE,insideH:BORDER_NONE,insideV:BORDER_NONE},
-        rows:[new TableRow({children:[
-          new TableCell({borders:NO_BORDERS,shading:{fill:GR,type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.CENTER,width:{size:1200,type:WidthType.DXA},children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:'ANEXO '+num,font:'Arial',size:pt(9),bold:true,color:'FFFFFF'})]})]}),
-          new TableCell({borders:NO_BORDERS,margins:{top:80,bottom:80,left:160,right:0},verticalAlign:VerticalAlign.CENTER,width:{size:CONTENT_W-1200,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:'Ficha de Avaliação do(a) Estagiário(a)',font:'Arial',size:pt(12),bold:true,color:'1A2332'})]})]})
-        ]})]}
-      );
-    }
-
-    function dadosTable(){
-      var C=Math.round(CONTENT_W/3);
-      function cell(lbl,val,w){
-        return new TableCell({borders:CELL_B,shading:{fill:'FFFFFF',type:ShadingType.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:w,type:WidthType.DXA},children:[
-          new Paragraph({spacing:{before:0,after:20},children:[new TextRun({text:lbl.toUpperCase(),font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),
-          new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:val||'—',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})
-        ]});
-      }
-      return new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:[CONTENT_W],
-        borders:{top:BORDER_NONE,bottom:BORDER_NONE,left:BORDER_NONE,right:BORDER_NONE,insideH:BORDER_NONE,insideV:BORDER_NONE},
-        rows:[
-          new TableRow({children:[new TableCell({borders:CELL_B,shading:{fill:'FFFFFF',type:ShadingType.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:CONTENT_W,type:WidthType.DXA},children:[new Paragraph({spacing:{before:0,after:20},children:[new TextRun({text:'ESTAGIÁRIO(A)',font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:_d.estagiario||'',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})]})]}) ,
-          new TableRow({children:[cell('Período Letivo',_d.periodo,C),cell('Carga Horária',(_d.carga||'—')+' h',C),cell('Supervisor(a)',_d.supervisor,CONTENT_W-C*2)]}),
-          new TableRow({children:[cell('Início do Estágio',_d.ini,C),cell('Término do Estágio',_d.fim,C),cell('','',CONTENT_W-C*2)]}),
-          new TableRow({children:[new TableCell({borders:CELL_B,shading:{fill:'FFFFFF',type:ShadingType.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:CONTENT_W,type:WidthType.DXA},children:[new Paragraph({spacing:{before:0,after:20},children:[new TextRun({text:'LOCAL DO ESTÁGIO',font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:_d.local||'',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})]})]})
-        ]
-      });
-    }
-
-    var CRITERIOS_A2_W=[{id:'a2_1',label:'Cumprimento das atividades propostas no plano de trabalho'},{id:'a2_2',label:'Qualidade do trabalho dentro de um padrão aceitável'},{id:'a2_3',label:'Disposição para aprender'},{id:'a2_4',label:'Formação profissional — conhecimento e habilidades técnicas desenvolvidas pela Universidade'},{id:'a2_5',label:'Assiduidade e pontualidade no cumprimento dos horários e dias de atividades'}];
-    var CRITERIOS_A3_W=[{id:'a3_a',titulo:'Rendimento no estágio',label:'Qualidade, rapidez e precisão com os quais executa as tarefas constantes do plano de atividades.'},{id:'a3_b',titulo:'Facilidade de compreensão',label:'Facilidade em interpretar, pôr em prática ou entender instruções.'},{id:'a3_c',titulo:'Conhecimento',label:'Domínios demonstrados no desenvolvimento das atividades e no cumprimento das tarefas.'},{id:'a3_d',titulo:'Organização e método de trabalho',label:'Capacidade de organizar as ações na confecção dos trabalhos.'},{id:'a3_e',titulo:'Iniciativa e independência',label:'Capacidade de buscar soluções sem prévias orientações, dentro dos padrões adequados.'},{id:'a3_f',titulo:'Comunicação',label:'Facilidade e espontaneidade com que age frente às situações.'},{id:'a3_g',titulo:'Responsabilidade',label:'Cuidado e seriedade com que o estagiário desempenha suas atribuições.'},{id:'a3_h',titulo:'Cooperação',label:'Atuação junto a outras pessoas no sentido de contribuir para o bem comum.'}];
-
-    var OPTS=['O','B','R','I'];
-    var CORES={O:'16A34A',B:'2563EB',R:'D97706',I:'DC2626'};
-
-    function criteriosTable(criterios,isA3){
-      var C0=400,C1=CONTENT_W-400-4*320,CO=320;
-      var cols=[C0,C1,CO,CO,CO,CO];
-      var hRow=new TableRow({tableHeader:true,children:[
-        new TableCell({borders:NO_BORDERS,shading:{fill:GR,type:ShadingType.CLEAR},width:{size:C0,type:WidthType.DXA},margins:{top:80,bottom:80,left:60,right:60},children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:'#',font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]}) ,
-        new TableCell({borders:NO_BORDERS,shading:{fill:GR,type:ShadingType.CLEAR},width:{size:C1,type:WidthType.DXA},margins:{top:80,bottom:80,left:120,right:120},children:[new Paragraph({children:[new TextRun({text:isA3?'Aspecto técnico-profissional':'Aspecto avaliado',font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]})
-      ].concat(OPTS.map(function(o){return new TableCell({borders:NO_BORDERS,shading:{fill:GR,type:ShadingType.CLEAR},width:{size:CO,type:WidthType.DXA},margins:{top:80,bottom:80,left:60,right:60},children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:o,font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]});}))});
+    var BN={style:BS.NONE,size:0,color:'FFFFFF'};
+    var NB={top:BN,bottom:BN,left:BN,right:BN};
+    var CB={top:{style:BS.SINGLE,size:1,color:'D1FAE5'},bottom:{style:BS.SINGLE,size:1,color:'D1FAE5'},left:{style:BS.SINGLE,size:1,color:'D1FAE5'},right:{style:BS.SINGLE,size:1,color:'D1FAE5'}};
+    var mp={top:1134,right:900,bottom:1134,left:900};
+    var hid='EST-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
+    var P=D.Paragraph,T=D.TextRun,Tb=D.Table,TR=D.TableRow,TC=D.TableCell;
+    function instH(){return[
+      new P({spacing:{before:0,after:40},border:{bottom:{style:BS.SINGLE,size:8,color:GRM}},children:[new T({text:'GOVERNO DO ESTADO DE MATO GROSSO · SECRETARIA DE ESTADO DE CIÊNCIA E TECNOLOGIA',font:'Arial',size:pt(7),color:'6B7280',bold:true})]}),
+      new P({spacing:{before:60,after:20},children:[new T({text:'Universidade do Estado de Mato Grosso — UNEMAT',font:'Arial',size:pt(11),bold:true,color:'14532D'})]}),
+      new P({spacing:{before:0,after:60},children:[new T({text:'Campus Universitário de Cáceres · Faculdade de Ciências Agrárias e Biológicas · Coordenação de Ciências Biológicas',font:'Arial',size:pt(8.5),color:'374151'})]})
+    ];}
+    function badge(num){return new Tb({width:{size:CW,type:W.DXA},columnWidths:[1200,CW-1200],borders:{top:BN,bottom:BN,left:BN,right:BN,insideH:BN,insideV:BN},rows:[new TR({children:[new TC({borders:NB,shading:{fill:GR,type:ST.CLEAR},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VA.CENTER,width:{size:1200,type:W.DXA},children:[new P({alignment:A.CENTER,children:[new T({text:'ANEXO '+num,font:'Arial',size:pt(9),bold:true,color:'FFFFFF'})]})]}),new TC({borders:NB,margins:{top:80,bottom:80,left:160,right:0},verticalAlign:VA.CENTER,width:{size:CW-1200,type:W.DXA},children:[new P({children:[new T({text:'Ficha de Avaliação do(a) Estagiário(a)',font:'Arial',size:pt(12),bold:true,color:'1A2332'})]})]})]})]});}
+    function dados(){var C=Math.round(CW/3);function cell(l,v,w){return new TC({borders:CB,shading:{fill:'FFFFFF',type:ST.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:w,type:W.DXA},children:[new P({spacing:{before:0,after:20},children:[new T({text:l.toUpperCase(),font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),new P({spacing:{before:0,after:0},children:[new T({text:v||'—',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})]}); }
+      return new Tb({width:{size:CW,type:W.DXA},columnWidths:[CW],borders:{top:BN,bottom:BN,left:BN,right:BN,insideH:BN,insideV:BN},rows:[
+        new TR({children:[new TC({borders:CB,shading:{fill:'FFFFFF',type:ST.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:CW,type:W.DXA},children:[new P({spacing:{before:0,after:20},children:[new T({text:'ESTAGIÁRIO(A)',font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),new P({spacing:{before:0,after:0},children:[new T({text:_d.estagiario||'',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})]})]}),
+        new TR({children:[cell('Período Letivo',_d.periodo,C),cell('Carga Horária',(_d.carga||'—')+' h',C),cell('Supervisor(a)',_d.supervisor,CW-C*2)]}),
+        new TR({children:[cell('Início do Estágio',_d.ini,C),cell('Término do Estágio',_d.fim,C),cell('','',CW-C*2)]}),
+        new TR({children:[new TC({borders:CB,shading:{fill:'FFFFFF',type:ST.CLEAR},margins:{top:60,bottom:60,left:120,right:120},width:{size:CW,type:W.DXA},children:[new P({spacing:{before:0,after:20},children:[new T({text:'LOCAL DO ESTÁGIO',font:'Arial',size:pt(6.5),bold:true,color:'059669'})]}),new P({spacing:{before:0,after:0},children:[new T({text:_d.local||'',font:'Arial',size:pt(9.5),bold:true,color:'111827'})]})]})]})
+      ]});}
+    var OPTS=['O','B','R','I'],CORES={O:'16A34A',B:'2563EB',R:'D97706',I:'DC2626'};
+    function critTable(criterios,isA3){
+      var C0=400,C1=CW-400-4*320,CO=320,cols=[C0,C1,CO,CO,CO,CO];
+      var hRow=new TR({tableHeader:true,children:[new TC({borders:NB,shading:{fill:GR,type:ST.CLEAR},width:{size:C0,type:W.DXA},margins:{top:80,bottom:80,left:60,right:60},children:[new P({alignment:A.CENTER,children:[new T({text:'#',font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]}),new TC({borders:NB,shading:{fill:GR,type:ST.CLEAR},width:{size:C1,type:W.DXA},margins:{top:80,bottom:80,left:120,right:120},children:[new P({children:[new T({text:isA3?'Aspecto técnico-profissional':'Aspecto avaliado',font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]})].concat(OPTS.map(function(o){return new TC({borders:NB,shading:{fill:GR,type:ST.CLEAR},width:{size:CO,type:W.DXA},margins:{top:80,bottom:80,left:60,right:60},children:[new P({alignment:A.CENTER,children:[new T({text:o,font:'Arial',size:pt(8),bold:true,color:'FFFFFF'})]})]});}))});
       var dRows=criterios.map(function(item,i){
-        var num=isA3?String.fromCharCode(97+i):String(i+1);
-        var av=avMap[item.id]||'';
-        var bg=i%2===0?'FFFFFF':'F0FAF4';
-        var numCell=new TableCell({borders:CELL_B,shading:{fill:bg,type:ShadingType.CLEAR},width:{size:C0,type:WidthType.DXA},margins:{top:80,bottom:80,left:60,right:60},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:num,font:'Arial',size:pt(9),bold:true,color:GRM})]})]});
-        var txtRuns=isA3&&item.titulo?[new TextRun({text:item.titulo,font:'Arial',size:pt(9),bold:true,color:'1E3A2F'}),new TextRun({text:'  '+item.label,font:'Arial',size:pt(8.5),color:'4B5563'})]:[new TextRun({text:item.label,font:'Arial',size:pt(9),color:'111827'})];
-        var txtCell=new TableCell({borders:CELL_B,shading:{fill:bg,type:ShadingType.CLEAR},width:{size:C1,type:WidthType.DXA},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({children:txtRuns})]});
-        var optCells=OPTS.map(function(o){var ativo=av===o;var cor=ativo?CORES[o]:'D1D5DB';return new TableCell({borders:CELL_B,shading:{fill:bg,type:ShadingType.CLEAR},width:{size:CO,type:WidthType.DXA},margins:{top:80,bottom:80,left:60,right:60},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:ativo?('  '+o+'  '):'○',font:'Arial',size:pt(ativo?9:10),bold:ativo,color:ativo?'FFFFFF':cor})]})]}); });
-        return new TableRow({children:[numCell,txtCell].concat(optCells)});
+        var num=isA3?String.fromCharCode(97+i):String(i+1),av=avaliacoes[item.id]||'',bg=i%2===0?'FFFFFF':'F0FAF4';
+        var nC=new TC({borders:CB,shading:{fill:bg,type:ST.CLEAR},width:{size:C0,type:W.DXA},margins:{top:80,bottom:80,left:60,right:60},verticalAlign:VA.CENTER,children:[new P({alignment:A.CENTER,children:[new T({text:num,font:'Arial',size:pt(9),bold:true,color:GRM})]})]});
+        var tRuns=isA3&&item.titulo?[new T({text:item.titulo,font:'Arial',size:pt(9),bold:true,color:'1E3A2F'}),new T({text:'  '+item.label,font:'Arial',size:pt(8.5),color:'4B5563'})]:[new T({text:item.label,font:'Arial',size:pt(9),color:'111827'})];
+        var tC=new TC({borders:CB,shading:{fill:bg,type:ST.CLEAR},width:{size:C1,type:W.DXA},margins:{top:80,bottom:80,left:120,right:120},verticalAlign:VA.CENTER,children:[new P({children:tRuns})]});
+        var oCs=OPTS.map(function(o){var at=av===o;return new TC({borders:CB,shading:{fill:bg,type:ST.CLEAR},width:{size:CO,type:W.DXA},margins:{top:80,bottom:80,left:60,right:60},verticalAlign:VA.CENTER,children:[new P({alignment:A.CENTER,children:[new T({text:at?('  '+o+'  '):'○',font:'Arial',size:pt(at?9:10),bold:at,color:at?'FFFFFF':CORES[o]})]})]}); });
+        return new TR({children:[nC,tC].concat(oCs)});
       });
-      return new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:cols,rows:[hRow].concat(dRows)});
+      return new Tb({width:{size:CW,type:W.DXA},columnWidths:cols,rows:[hRow].concat(dRows)});
     }
-
-    function notaBlock(nota,hint){
-      var W1=2200,W2=1200,W3=CONTENT_W-3400;
-      var bAM={style:BorderStyle.SINGLE,size:4,color:'FDE68A'};
-      return new Table({width:{size:CONTENT_W,type:WidthType.DXA},columnWidths:[W1,W2,W3],
-        borders:{top:BORDER_NONE,bottom:BORDER_NONE,left:BORDER_NONE,right:BORDER_NONE,insideH:BORDER_NONE,insideV:BORDER_NONE},
-        rows:[new TableRow({children:[
-          new TableCell({borders:{top:bAM,bottom:bAM,left:bAM,right:BORDER_NONE},shading:{fill:'FEF9C3',type:ShadingType.CLEAR},width:{size:W1,type:WidthType.DXA},margins:{top:100,bottom:100,left:120,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({children:[new TextRun({text:'Nota Final (0–10):',font:'Arial',size:pt(9.5),bold:true,color:'78350F'})]})]}) ,
-          new TableCell({borders:{top:bAM,bottom:bAM,left:BORDER_NONE,right:bAM},shading:{fill:'FEF9C3',type:ShadingType.CLEAR},width:{size:W2,type:WidthType.DXA},margins:{top:100,bottom:100,left:120,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:nota||'—',font:'Arial',size:pt(18),bold:true,color:AMB})]})]}),
-          new TableCell({borders:NO_BORDERS,shading:{fill:'FEF9C3',type:ShadingType.CLEAR},width:{size:W3,type:WidthType.DXA},margins:{top:100,bottom:100,left:180,right:120},verticalAlign:VerticalAlign.CENTER,children:[new Paragraph({children:[new TextRun({text:hint,font:'Arial',size:pt(8.5),color:'92400E',italics:true})]})]})
-        ]})]
-      });
-    }
-
-    function sigBlock(){
-      return [
-        new Paragraph({spacing:{before:280,after:60},children:[new TextRun({text:'Cáceres-MT, '+(_d.dataAval||''),font:'Arial',size:pt(9),color:'374151'})]}),
-        new Paragraph({spacing:{before:200,after:40},border:{bottom:{style:BorderStyle.SINGLE,size:6,color:'374151'}},children:[new TextRun({text:'',font:'Arial',size:pt(9)})]}),
-        new Paragraph({spacing:{before:60,after:20},children:[new TextRun({text:_d.avaliador||'',font:'Arial',size:pt(10),bold:true,color:'1A2332'})]}),
-        new Paragraph({spacing:{before:0,after:20},children:[new TextRun({text:_d.cargo||'',font:'Arial',size:pt(8.5),color:'4B5563'})]}),
-      ].concat(_d.cpf?[new Paragraph({spacing:{before:0,after:0},children:[new TextRun({text:'CPF: '+_d.cpf,font:'Arial',size:pt(8),color:'6B7280'})]})]: []);
-    }
-
-    function secTitle(text){
-      return new Paragraph({spacing:{before:200,after:80},border:{left:{style:BorderStyle.SINGLE,size:12,color:'22C55E'}},indent:{left:120},children:[new TextRun({text:text.toUpperCase(),font:'Arial',size:pt(8.5),bold:true,color:GRM})]});
-    }
-
-    function legenda(){
-      return new Paragraph({spacing:{before:60,after:100},children:[
-        new TextRun({text:'● Ótimo  ',font:'Arial',size:pt(8),color:'16A34A',bold:true}),
-        new TextRun({text:'● Bom  ',font:'Arial',size:pt(8),color:'2563EB',bold:true}),
-        new TextRun({text:'● Regular  ',font:'Arial',size:pt(8),color:'D97706',bold:true}),
-        new TextRun({text:'● Insuficiente',font:'Arial',size:pt(8),color:'DC2626',bold:true}),
-      ]});
-    }
-
-    function footerLine(){
-      return new Paragraph({spacing:{before:200,after:0},alignment:AlignmentType.CENTER,shading:{fill:'F9FAFB',type:ShadingType.CLEAR},children:[new TextRun({text:'ID: '+hashId+'  ·  Para assinatura digital: assinador.iti.br',font:'Courier New',size:pt(6.5),color:'9CA3AF'})]});
-    }
-
-    var doc = new Document({
-      styles:{default:{document:{run:{font:'Arial',size:pt(10)}}}},
-      sections:[
-        {
-          properties:{page:{size:{width:PAGE_W,height:16838},margin:marginProps}},
-          children: instHeader().concat([
-            new Paragraph({spacing:{before:120,after:100},children:[]}),
-            anexoBadge('II'),
-            new Paragraph({spacing:{before:120,after:0},children:[]}),
-            dadosTable(),
-            secTitle('Critérios de Avaliação'),
-            legenda(),
-            criteriosTable(CRITERIOS_A2_W,false),
-            secTitle('Comentários e/ou Sugestões do Supervisor'),
-            new Paragraph({spacing:{before:0,after:80},shading:{fill:'F0FAF4',type:ShadingType.CLEAR},children:[new TextRun({text:_d.comentarios||' ',font:'Arial',size:pt(9)})]}),
-            notaBlock(_d.nota2,'Atribuída pelo supervisor de campo'),
-          ]).concat(sigBlock()).concat([footerLine()])
-        },
-        {
-          properties:{page:{size:{width:PAGE_W,height:16838},margin:marginProps}},
-          children: instHeader().concat([
-            new Paragraph({spacing:{before:120,after:100},children:[]}),
-            anexoBadge('III'),
-            new Paragraph({spacing:{before:120,after:0},children:[]}),
-            dadosTable(),
-            secTitle('Critérios Técnico-Profissionais'),
-            legenda(),
-            criteriosTable(CRITERIOS_A3_W,true),
-            new Paragraph({spacing:{before:0,after:80},children:[]}),
-            notaBlock(_d.nota3,'Atribuída pelo supervisor acadêmico'),
-            new Paragraph({spacing:{before:160,after:0},alignment:AlignmentType.CENTER,children:[new TextRun({text:'Coordenação do Curso de Ciências Biológicas – Campus Cáceres',font:'Arial',size:pt(8),color:'374151'})]}),
-            new Paragraph({spacing:{before:0,after:0},alignment:AlignmentType.CENTER,children:[new TextRun({text:'Av. São João, nº 563 – Cavalhada – Cáceres-MT – CEP 78.200-000 – Tel. (65) 3221-0538 – biologia@unemat.br',font:'Arial',size:pt(8),color:'374151'})]}),
-          ]).concat(sigBlock()).concat([footerLine()])
-        }
-      ]
-    });
-
-    Packer.toBlob(doc).then(function(blob){
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'Avaliacao_Estagio_' + (_d.estagiario||'').replace(/\s+/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.docx';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 15000);
-      ldgOff();
-      tk('Word (.docx) gerado com sucesso!', 'ok');
-    }).catch(function(e){ ldgOff(); tk('Erro ao gerar Word: '+e.message,'err'); });
-  } catch(e) { ldgOff(); tk('Erro: '+e.message, 'err'); console.error(e); }
+    function nota(val,hint){var bA={style:BS.SINGLE,size:4,color:'FDE68A'},W1=2200,W2=1200,W3=CW-3400;
+      return new Tb({width:{size:CW,type:W.DXA},columnWidths:[W1,W2,W3],borders:{top:BN,bottom:BN,left:BN,right:BN,insideH:BN,insideV:BN},rows:[new TR({children:[new TC({borders:{top:bA,bottom:bA,left:bA,right:BN},shading:{fill:'FEF9C3',type:ST.CLEAR},width:{size:W1,type:W.DXA},margins:{top:100,bottom:100,left:120,right:120},verticalAlign:VA.CENTER,children:[new P({children:[new T({text:'Nota Final (0–10):',font:'Arial',size:pt(9.5),bold:true,color:'78350F'})]})]}) ,new TC({borders:{top:bA,bottom:bA,left:BN,right:bA},shading:{fill:'FEF9C3',type:ST.CLEAR},width:{size:W2,type:W.DXA},margins:{top:100,bottom:100,left:120,right:120},verticalAlign:VA.CENTER,children:[new P({alignment:A.CENTER,children:[new T({text:val||'—',font:'Arial',size:pt(18),bold:true,color:AMB})]})]}),new TC({borders:NB,shading:{fill:'FEF9C3',type:ST.CLEAR},width:{size:W3,type:W.DXA},margins:{top:100,bottom:100,left:180,right:120},verticalAlign:VA.CENTER,children:[new P({children:[new T({text:hint,font:'Arial',size:pt(8.5),color:'92400E',italics:true})]})]})]})]}); }
+    function sig(){return[new P({spacing:{before:280,after:60},children:[new T({text:'Cáceres-MT, '+(_d.dataAval||''),font:'Arial',size:pt(9),color:'374151'})]}),new P({spacing:{before:200,after:40},border:{bottom:{style:BS.SINGLE,size:6,color:'374151'}},children:[new T({text:'',font:'Arial',size:pt(9)})]}),new P({spacing:{before:60,after:20},children:[new T({text:_d.avaliador||'',font:'Arial',size:pt(10),bold:true,color:'1A2332'})]}),new P({spacing:{before:0,after:20},children:[new T({text:_d.cargo||'',font:'Arial',size:pt(8.5),color:'4B5563'})]})].concat(_d.cpf?[new P({spacing:{before:0,after:0},children:[new T({text:'CPF: '+_d.cpf,font:'Arial',size:pt(8),color:'6B7280'})]})]:[]); }
+    function secT(t){return new P({spacing:{before:200,after:80},border:{left:{style:BS.SINGLE,size:12,color:'22C55E'}},indent:{left:120},children:[new T({text:t.toUpperCase(),font:'Arial',size:pt(8.5),bold:true,color:GRM})]});}
+    function leg(){return new P({spacing:{before:60,after:100},children:[new T({text:'● Ótimo  ',font:'Arial',size:pt(8),color:'16A34A',bold:true}),new T({text:'● Bom  ',font:'Arial',size:pt(8),color:'2563EB',bold:true}),new T({text:'● Regular  ',font:'Arial',size:pt(8),color:'D97706',bold:true}),new T({text:'● Insuficiente',font:'Arial',size:pt(8),color:'DC2626',bold:true})]});}
+    function foot(){return new P({spacing:{before:200,after:0},alignment:A.CENTER,shading:{fill:'F9FAFB',type:ST.CLEAR},children:[new T({text:'ID: '+hid+'  ·  Para assinatura digital: assinador.iti.br',font:'Courier New',size:pt(6.5),color:'9CA3AF'})]});}
+    var doc=new D.Document({styles:{default:{document:{run:{font:'Arial',size:pt(10)}}}},sections:[
+      {properties:{page:{size:{width:PW,height:16838},margin:mp}},children:instH().concat([new P({spacing:{before:120,after:100},children:[]}),badge('II'),new P({spacing:{before:120,after:0},children:[]}),dados(),secT('Critérios de Avaliação'),leg(),critTable(CRITERIOS_A2,false),secT('Comentários e/ou Sugestões do Supervisor'),new P({spacing:{before:0,after:80},shading:{fill:'F0FAF4',type:ST.CLEAR},children:[new T({text:_d.comentarios||' ',font:'Arial',size:pt(9)})]}),nota(_d.nota2,'Atribuída pelo supervisor de campo')]).concat(sig()).concat([foot()])},
+      {properties:{page:{size:{width:PW,height:16838},margin:mp}},children:instH().concat([new P({spacing:{before:120,after:100},children:[]}),badge('III'),new P({spacing:{before:120,after:0},children:[]}),dados(),secT('Critérios Técnico-Profissionais'),leg(),critTable(CRITERIOS_A3,true),new P({spacing:{before:0,after:80},children:[]}),nota(_d.nota3,'Atribuída pelo supervisor acadêmico'),new P({spacing:{before:160,after:0},alignment:A.CENTER,children:[new T({text:'Coordenação do Curso de Ciências Biológicas – Campus Cáceres',font:'Arial',size:pt(8),color:'374151'})]}),new P({spacing:{before:0,after:0},alignment:A.CENTER,children:[new T({text:'Av. São João, nº 563 – Cavalhada – Cáceres-MT – CEP 78.200-000 – Tel. (65) 3221-0538 – biologia@unemat.br',font:'Arial',size:pt(8),color:'374151'})]})] ).concat(sig()).concat([foot()])}
+    ]});
+    D.Packer.toBlob(doc).then(function(blob){
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=url;
+      a.download='Avaliacao_Estagio_'+(_d.estagiario||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.docx';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},15000);
+      ldgOff();tk('Word (.docx) gerado!','ok');
+    }).catch(function(e){ldgOff();tk('Erro: '+e.message,'err');});
+  }catch(e){ldgOff();tk('Erro: '+e.message,'err');console.error(e);}
 }
 
 // ============================================================
@@ -944,16 +768,12 @@ function uploadPDFAssinado(input){
       document.getElementById('pdf_salvo_info').style.display='block';
       document.getElementById('btn_excluir_pdf').style.display='block';
       document.getElementById('area_upload_pdf').style.opacity='.5';
-      // só mostra enviar se ainda não foi enviado
       if(avalAtualId){
         DB.ref('estagio/'+USER.key+'/avaliacoes/'+avalAtualId).once('value').then(function(snap){
           var aval=snap.val()||{};
           var btnEnv=document.getElementById('btn_enviar_coord');
-          if(aval.enviado_coord){
-            btnEnv.textContent='✅ Já enviado à coordenação';btnEnv.style.background='#166534';btnEnv.disabled=true;btnEnv.style.display='flex';
-          } else {
-            btnEnv.textContent='✉ Enviar à Coordenação (aetmorini@unemat.br)';btnEnv.style.background='#dc2626';btnEnv.disabled=false;btnEnv.style.display='flex';
-          }
+          if(aval.enviado_coord){btnEnv.textContent='✅ Já enviado à coordenação';btnEnv.style.background='#166534';btnEnv.disabled=true;btnEnv.style.display='flex';}
+          else{btnEnv.textContent='✉ Enviar à Coordenação (aetmorini@unemat.br)';btnEnv.style.background='#dc2626';btnEnv.disabled=false;btnEnv.style.display='flex';}
         });
       }
       tk('PDF assinado salvo!','ok');
@@ -997,35 +817,20 @@ async function enviarParaCoord(){
   ldgOn('Enviando e-mail para coordenação...');
   var params={
     to_email:'aetmorini@unemat.br',
-    cc_email:'ernandes.sobreira@unemat.br',
     nome_estagiario:d.estagiario||USER.nome,
     periodo:d.periodo||'',
     nota_a2:d.nota2||'—',
     nota_a3:d.nota3||'—',
     local:d.local||'',
-    supervisor:d.supervisor||'',
     avaliador:d.avaliador||USER.nome,
-    cargo:d.cargo||'',
-    data_aval:d.dataAval||'',
-    comentarios:d.comentarios||'Sem observações adicionais.',
     email_avaliador:d.emailAvaliador||USER.email,
     link_sistema:'https://ernandes-sobreira.github.io/estagio-biologia/',
     name:d.avaliador||USER.nome,
     email:USER.email||''
   };
   try{
-    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params, {
-      publicKey: EMAILJS_KEY,
-      limitRate: { throttle: 2000 }
-    });
-    // Cópia para Ernandes via segundo envio silencioso
-    try {
-      var paramsCopia = Object.assign({}, params, {
-        to_email: 'ernandes.sobreira@unemat.br',
-        nome_estagiario: '[CÓPIA] ' + (params.nome_estagiario||'')
-      });
-      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, paramsCopia);
-    } catch(e2){ console.warn('Cópia Ernandes falhou:', e2); }
+    await emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,params);
+    try{var pc=Object.assign({},params,{to_email:'ernandes.sobreira@unemat.br'});await emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,pc);}catch(e2){console.warn('Cópia Ernandes:',e2);}
     ldgOff();
     DB.ref('estagio/'+USER.key+'/avaliacoes/'+avalAtualId).update({enviado_coord:true,data_envio:new Date().toISOString()});
     var btn=document.getElementById('btn_enviar_coord');
@@ -1061,7 +866,7 @@ async function renderListas(){
         '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px">'+stPDF+' '+stEnvio+'</div></div>'+
         '<div class="dacts">'+
         '<button class="btn bp" style="padding:6px 12px;font-size:.79rem" onclick="editarA(\''+a.id+'\')">Editar</button>'+
-        '<button class="btn bp" style="padding:6px 12px;font-size:.79rem;background:#2169c4" onclick="wdA(\''+a.id+'\')">Word</button>'+
+        
         btnBaixarPDF+btnEnv+
         '<button style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.78rem;font-weight:700" onclick="delA(\''+a.id+'\')">X</button>'+
         '</div></div>';
