@@ -247,8 +247,8 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
   <div class="pdf-salvo" id="pdf_salvo_info">✅ PDF assinado salvo! Pronto para enviar à coordenação.</div>
   <div class="bts">
     <button class="btn" style="background:#0f766e;color:#fff" onclick="salvarA('apenas')">💾 Salvar</button>
-    <button class="btn bp" onclick="salvarA('docx')">📄 Baixar Word (.docx)</button>
-    <button class="btn bg" onclick="salvarA('pdf')">📑 Baixar PDF (imprimir)</button>
+    <button class="btn bp" onclick="salvarA('docx')">📄 Baixar Word (.doc)</button>
+    <button class="btn bg" onclick="salvarA('pdf')">📑 Gerar PDF (imprimir)</button>
     <button class="btn" style="background:#6366f1;color:#fff" onclick="abrirGovBr()">✎ Assinar pelo gov.br</button>
     <button class="btn bs" onclick="limA()">Limpar</button>
   </div>
@@ -326,8 +326,7 @@ var EMAILJS_KEY      = 'taAiZImA6gXAx-iNI';
 // Para descobrir o UID: faça login, abra console.log(USER.key)
 // ============================================================
 var ADMINS = [
-  'xnob5hHsrDdxdxKi3R2VPNwQtv23', // Ernandes (replicado do ProfÁgua)
-  'y39GeOJgVQeyHQYsxrJcpbpvpo32', // Admin ProfÁgua
+  'LsL3wVvyLLRDU7YnwQFpJG5qNq62', // Ernandes Sobreira
   'COLE_AQUI_UID_ALESSANDRA',       // Alessandra — substitua pelo UID real
 ];
 
@@ -511,111 +510,148 @@ function coletarA(){
 function validA(d){return d.estagiario&&d.local&&d.supervisor&&d.avaliador&&d.cargo;}
 
 // ============================================================
-// GERAR DOCX (puro HTML → Word via Blob)
-// Gera HTML estilizado que Word abre corretamente
+// CONSTRUTOR HTML DO FORMULÁRIO (compartilhado entre PDF e Word)
 // ============================================================
-function gerarDocxA(d){
-  ldgOn('Gerando Word...');
-  var avMap=avaliacoes;
-  var labMap={O:'Ótimo',B:'Bom',R:'Regular',I:'Insuficiente'};
-
-  function rowA2(item,i){
-    var av=avMap[item.id]||'';
-    return '<tr><td style="width:30px;text-align:center;font-weight:700;color:#1a5c3a">'+(i+1)+'</td>'+
-      '<td style="padding:5px 8px">'+item.label+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='O'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='B'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='R'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='I'?'●':'○')+'</td></tr>';
-  }
-  function rowA3(item,i){
-    var av=avMap[item.id]||'';
-    return '<tr><td style="width:24px;text-align:center;font-weight:700;color:#1a5c3a">'+String.fromCharCode(97+i)+'</td>'+
-      '<td style="padding:5px 8px"><strong>'+item.titulo+'</strong><br><small style="color:#555">'+item.label+'</small></td>'+
-      '<td style="width:30px;text-align:center">'+(av==='O'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='B'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='R'?'●':'○')+'</td>'+
-      '<td style="width:30px;text-align:center">'+(av==='I'?'●':'○')+'</td></tr>';
-  }
-
-  var docHtml='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/>'+
-    '<style>body{font-family:Arial,sans-serif;font-size:10pt;margin:15mm 20mm;color:#111}'+
-    '.hdr{text-align:center;border-bottom:2px solid #1a5c3a;padding-bottom:8px;margin-bottom:14px}'+
-    '.hdr p{margin:1px 0;font-size:8.5pt;font-weight:700;color:#1a5c3a}'+
-    'h2{font-size:12pt;font-weight:700;text-align:center;margin:8px 0 14px;color:#1a2332}'+
-    '.tag{display:inline-block;background:#1a5c3a;color:white;font-size:8pt;font-weight:700;padding:2px 10px;border-radius:3px;margin-bottom:10px}'+
-    'table{width:100%;border-collapse:collapse;font-size:9.5pt;margin-bottom:10px}'+
-    'th{background:#1a5c3a;color:white;padding:5px 8px;font-size:8.5pt}'+
-    'td{padding:5px 7px;border-bottom:1px solid #e0e0e0;vertical-align:middle}'+
-    '.dado{border-bottom:1px solid #ccc;padding:3px 0;font-size:9.5pt;margin-bottom:4px}'+
-    '.dado-l{font-size:7.5pt;color:#666;text-transform:uppercase}'+
-    '.nota{border:2px solid #e8a020;padding:6px 14px;display:inline-block;font-size:15pt;font-weight:700;color:#e8a020;margin:8px 0}'+
-    '.sig{margin-top:24px;border-top:1px solid #ccc;padding-top:14px;text-align:center}'+
-    '.sig-line{border-bottom:1px solid #333;width:280px;height:36px;margin:0 auto}'+
-    '.footer{margin-top:20px;background:#f4f6f8;padding:6px 10px;font-size:7pt;color:#888;text-align:center;font-family:monospace}'+
-    '@page{margin:18mm}@media print{body{margin:0}}</style></head><body>';
-
+function buildFormHtml(d, avMap){
   var hashId='EST-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase();
-  var instHdr='<div class="hdr"><p>GOVERNO DO ESTADO DE MATO GROSSO</p><p>SECRETARIA DE ESTADO DE CIÊNCIA E TECNOLOGIA</p>'+
-    '<p>UNIVERSIDADE DO ESTADO DE MATO GROSSO — UNEMAT</p>'+
-    '<p>CAMPUS UNIVERSITÁRIO DE CÁCERES · FACULDADE DE CIÊNCIAS AGRÁRIAS E BIOLÓGICAS</p>'+
-    '<p>COORDENAÇÃO DO CURSO DE CIÊNCIAS BIOLÓGICAS</p></div>';
-  var dadosGerais='<div class="dado"><div class="dado-l">Estagiário(a)</div>'+d.estagiario+'</div>'+
-    '<div class="dado"><div class="dado-l">Período letivo</div>'+d.periodo+'</div>'+
-    '<div style="display:flex;gap:20px"><div class="dado" style="flex:1"><div class="dado-l">Início do estágio</div>'+d.ini+'</div>'+
-    '<div class="dado" style="flex:1"><div class="dado-l">Término do estágio</div>'+d.fim+'</div></div>'+
-    '<div class="dado"><div class="dado-l">Local do estágio</div>'+d.local+'</div>'+
-    '<div class="dado"><div class="dado-l">Supervisor(a)</div>'+d.supervisor+'</div>';
-  var sig='<div class="sig"><div>DATA: '+d.dataAval+'</div><br>'+
-    '<div class="sig-line"></div>'+
-    '<div style="margin-top:4px"><strong>'+d.avaliador+'</strong> — '+d.cargo+'<br>'+
-    (d.cpf?'CPF: '+d.cpf:'')+'</div></div>';
-  var footer='<div class="footer">ID: '+hashId+' · Gerado em: '+new Date().toLocaleString('pt-BR')+' · Para assinatura digital: assinador.iti.br</div>';
 
-  // ANEXO II
-  docHtml+=instHdr+'<h2>ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</h2>'+
-    '<div><span class="tag">ANEXO II</span></div>'+dadosGerais+
-    '<p style="font-size:8.5pt;margin:8px 0 5px"><strong>AVALIAÇÕES:</strong> (O) Ótimo &nbsp; (B) Bom &nbsp; (R) Regular &nbsp; (I) Insuficiente</p>'+
-    '<table><tr><th>#</th><th>Aspecto avaliado</th><th>O</th><th>B</th><th>R</th><th>I</th></tr>'+
-    CRITERIOS_A2.map(function(item,i){return rowA2(item,i);}).join('')+
-    '</table>'+
-    '<p style="margin-bottom:4px;font-size:8.5pt;font-weight:700">Comentários e/ou sugestões do Supervisor de Estágio:</p>'+
-    '<div style="border:1px solid #ccc;border-radius:4px;padding:8px;min-height:40px;font-size:9pt">'+(d.comentarios||'&nbsp;')+'</div>'+
-    '<div>Nota final (0–10): <span class="nota">'+(d.nota2||'—')+'</span></div>'+
+  function row(item, num){
+    var av=avMap[item.id]||'';
+    var cells=['O','B','R','I'].map(function(o){
+      return '<td style="width:26px;text-align:center;font-size:13pt">'+(av===o?'&#9679;':'&#9675;')+'</td>';
+    }).join('');
+    return '<tr><td style="width:26px;text-align:center;font-weight:700;color:#1a5c3a;font-size:9pt">'+num+'</td>'+
+      '<td style="padding:5px 8px;font-size:9pt">'+(item.titulo?'<strong>'+item.titulo+'</strong> — ':'')+item.label+'</td>'+cells+'</tr>';
+  }
+
+  var css='<style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10pt;color:#111;margin:0;padding:12mm 16mm}'+
+    '.page{max-width:680px;margin:0 auto}.hdr{text-align:center;border-bottom:2.5px solid #1a5c3a;padding-bottom:8px;margin-bottom:14px}'+
+    '.hdr p{margin:1px 0;font-size:8pt;font-weight:700;color:#1a5c3a}'+
+    'h2{font-size:11.5pt;font-weight:700;text-align:center;margin:8px 0 6px;color:#1a2332;line-height:1.3}'+
+    '.badge{display:inline-block;background:#1a5c3a;color:white;font-size:8pt;font-weight:700;padding:2px 10px;border-radius:3px;margin-bottom:10px}'+
+    '.dados{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;margin-bottom:12px}'+
+    '.dado{border-bottom:1px solid #ccc;padding:3px 0;font-size:9pt}'+
+    '.dado-l{font-size:7pt;color:#666;text-transform:uppercase;font-weight:700}'+
+    '.dado-full{grid-column:span 2}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:10px}'+
+    'th{background:#1a5c3a;color:white;padding:5px 8px;font-size:8pt;text-align:center}'+
+    'th:nth-child(2){text-align:left}'+
+    'td{border-bottom:1px solid #eee;vertical-align:middle}'+
+    '.nota-box{border:2px solid #e8a020;padding:6px 14px;display:inline-block;font-size:15pt;font-weight:700;color:#e8a020;margin:8px 0}'+
+    '.coment{border:1px solid #ccc;padding:8px;min-height:38px;font-size:9pt;margin-bottom:8px}'+
+    '.sig{margin-top:20px;border-top:1px solid #ccc;padding-top:12px}'+
+    '.sig-line{border-bottom:1px solid #333;width:300px;height:34px;margin:10px 0 4px}'+
+    '.footer-doc{margin-top:16px;background:#f4f6f8;padding:5px 10px;font-size:6.5pt;color:#999;text-align:center;font-family:monospace}'+
+    '.coord-info{margin-top:10px;font-size:8pt;text-align:center;color:#444;border-top:1px solid #ddd;padding-top:8px}'+
+    '@page{margin:12mm}@media print{body{margin:0;padding:8mm}}</style>';
+
+  var instHdr='<div class="hdr"><p>GOVERNO DO ESTADO DE MATO GROSSO</p>'+
+    '<p>SECRETARIA DE ESTADO DE CIÊ NCIA E TECNOLOGIA</p>'+
+    '<p>UNIVERSIDADE DO ESTADO DE MATO GROSSO &mdash; UNEMAT</p>'+
+    '<p>CAMPUS UNIVERSITÁRIO DE CÁCERES &middot; FACULDADE DE CIÊNCIAS AGRÁRIAS E BIOLÓGICAS</p>'+
+    '<p>COORDENAÇÃO DO CURSO DE CIÊNCIAS BIOLÓGICAS</p></div>';
+
+  var dadosHtml='<div class="dados">'+
+    '<div class="dado dado-full"><div class="dado-l">Estagiário(a)</div>'+d.estagiario+'</div>'+
+    '<div class="dado"><div class="dado-l">Período letivo</div>'+d.periodo+'</div>'+
+    '<div class="dado"><div class="dado-l">Carga horária</div>'+(d.carga||'—')+' h</div>'+
+    '<div class="dado"><div class="dado-l">Início do estágio</div>'+d.ini+'</div>'+
+    '<div class="dado"><div class="dado-l">Término do estágio</div>'+d.fim+'</div>'+
+    '<div class="dado dado-full"><div class="dado-l">Local do estágio</div>'+d.local+'</div>'+
+    '<div class="dado dado-full"><div class="dado-l">Supervisor(a)</div>'+d.supervisor+'</div>'+
+    '</div>';
+
+  var sig='<div class="sig">'+
+    '<div style="font-size:9pt">DATA: '+d.dataAval+'</div>'+
+    '<div class="sig-line"></div>'+
+    '<div style="font-size:9pt"><strong>'+d.avaliador+'</strong> &mdash; '+d.cargo+'<br>'+
+    (d.cpf?'CPF: '+d.cpf:'')+'</div></div>';
+
+  var footer='<div class="footer-doc">ID: '+hashId+' &middot; Gerado em: '+new Date().toLocaleString('pt-BR')+' &middot; Para assinatura digital: assinador.iti.br</div>';
+
+  var tblA2='<table><thead><tr><th style="width:26px">#</th><th style="text-align:left">Aspecto avaliado</th>'+
+    '<th style="width:26px">O</th><th style="width:26px">B</th><th style="width:26px">R</th><th style="width:26px">I</th></tr></thead><tbody>'+
+    CRITERIOS_A2.map(function(item,i){return row(item,i+1);}).join('')+
+    '</tbody></table>';
+
+  var tblA3='<table><thead><tr><th style="width:26px">#</th><th style="text-align:left">Aspecto técnico-profissional</th>'+
+    '<th style="width:26px">O</th><th style="width:26px">B</th><th style="width:26px">R</th><th style="width:26px">I</th></tr></thead><tbody>'+
+    CRITERIOS_A3.map(function(item,i){return row(item,String.fromCharCode(97+i));}).join('')+
+    '</tbody></table>';
+
+  var legenda='<p style="font-size:8pt;margin:6px 0 4px"><strong>AVALIAÇÕES:</strong> (O) Ótimo &nbsp; (B) Bom &nbsp; (R) Regular &nbsp; (I) Insuficiente</p>';
+
+  var pg1=instHdr+'<h2>ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</h2>'+
+    '<div><span class="badge">ANEXO II</span></div>'+dadosHtml+legenda+tblA2+
+    '<p style="font-size:8.5pt;font-weight:700;margin-bottom:4px">Comentários e/ou sugestões do Supervisor:</p>'+
+    '<div class="coment">'+(d.comentarios||'&nbsp;')+'</div>'+
+    '<div>Nota final (0&ndash;10): <span class="nota-box">'+(d.nota2||'&mdash;')+'</span></div>'+
     sig+footer;
 
-  // Quebra de página
-  docHtml+='<br style="page-break-after:always">';
-
-  // ANEXO III
-  docHtml+=instHdr+'<h2>ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</h2>'+
-    '<div><span class="tag">ANEXO III</span></div>'+dadosGerais+
-    '<p style="font-size:8.5pt;margin:8px 0 5px"><strong>AVALIAÇÕES:</strong> (O) Ótimo &nbsp; (B) Bom &nbsp; (R) Regular &nbsp; (I) Insuficiente</p>'+
-    '<table><tr><th>#</th><th>Aspecto técnico-profissional</th><th>O</th><th>B</th><th>R</th><th>I</th></tr>'+
-    CRITERIOS_A3.map(function(item,i){return rowA3(item,i);}).join('')+
-    '</table>'+
-    '<div>Nota final (0–10): <span class="nota">'+(d.nota3||'—')+'</span></div>'+
+  var pg2=instHdr+'<h2>ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</h2>'+
+    '<div><span class="badge">ANEXO III</span></div>'+dadosHtml+legenda+tblA3+
+    '<div>Nota final (0&ndash;10): <span class="nota-box">'+(d.nota3||'&mdash;')+'</span></div>'+
     sig+
-    '<div style="margin-top:10px;font-size:8pt;text-align:center">Coordenação de Curso de Ciências Biológicas – Campus Cáceres<br>Av. São João, n° 563 – Cavalhada – Cáceres/MT – CEP 78.200-000<br>Tel. (65) 3221-0538 · biologia@unemat.br</div>'+
+    '<div class="coord-info">Coordenação de Curso de Ciências Biológicas &ndash; Campus Cáceres<br>'+
+    'Av. São João, n° 563 &ndash; Cavalhada &ndash; Cáceres/MT &ndash; CEP 78.200-000 &ndash; Tel. (65) 3221-0538 &ndash; biologia@unemat.br</div>'+
     footer;
 
-  docHtml+='</body></html>';
-
-  var blob=new Blob(['\ufeff'+docHtml],{type:'application/msword;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;a.download='Avaliacao_Estagio_'+(d.estagiario||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.doc';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);},8000);
-  ldgOff();tk('Word gerado! Abra no Word/LibreOffice para imprimir ou salvar como PDF.','ok');
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'+
+    '<meta name="viewport" content="width=device-width,initial-scale=1.0">'+
+    '<title>Avaliação de Estágio &mdash; '+d.estagiario+'</title>'+css+'</head><body>'+
+    '<div class="page">'+pg1+'</div>'+
+    '<div style="page-break-after:always"></div>'+
+    '<div class="page">'+pg2+'</div>'+
+    '</body></html>';
 }
 
 // ============================================================
-// GERAR PDF (janela para impressão)
+// GERAR PDF — abre janela com botão imprimir/salvar como PDF
 // ============================================================
 function gerarPDFA(d){
-  gerarDocxA(d);
-  tk('Para PDF: abra o Word baixado e use Arquivo > Salvar como PDF','inf');
+  ldgOn('Preparando PDF...');
+  var html=buildFormHtml(d,avaliacoes);
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var win=window.open(url,'_blank');
+  ldgOff();
+  if(!win){
+    // fallback para mobile: download do HTML
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='Avaliacao_Estagio_'+(d.estagiario||'').replace(/\s+/g,'_')+'.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    tk('Arquivo HTML baixado. Abra e use Compartilhar > Imprimir para salvar como PDF.','inf');
+  } else {
+    setTimeout(function(){win.print();},600);
+    tk('Janela aberta. Use Imprimir > Salvar como PDF para gerar o PDF.','ok');
+  }
+  setTimeout(function(){URL.revokeObjectURL(url);},30000);
+}
+
+// ============================================================
+// GERAR WORD — HTML com namespace Word (abre no Word/LibreOffice)
+// ============================================================
+function gerarDocxA(d){
+  ldgOn('Gerando Word...');
+  var html=buildFormHtml(d,avaliacoes);
+  // Substitui doctype por namespace Word para abrir direto no Word
+  var wordHtml=html.replace(
+    '<!DOCTYPE html>',
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+  ).replace(
+    '<html lang="pt-BR">',
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40" lang="pt-BR">'
+  );
+  var blob=new Blob(['\ufeff'+wordHtml],{type:'application/vnd.ms-word;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='Avaliacao_Estagio_'+(d.estagiario||'').replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.doc';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},15000);
+  ldgOff();
+  tk('Word (.doc) gerado e baixado com sucesso!','ok');
 }
 
 // ============================================================
