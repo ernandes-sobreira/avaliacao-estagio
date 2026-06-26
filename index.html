@@ -317,8 +317,8 @@ var FIREBASE_CONFIG = {
 // ============================================================
 // EMAILJS — configure com suas credenciais
 // ============================================================
-var EMAILJS_SERVICE  = 'service_sutafkf';
-var EMAILJS_TEMPLATE = 'template_inoo1th'; // crie template para estágio
+var EMAILJS_SERVICE  = 'avaliacao-estagio';
+var EMAILJS_TEMPLATE = 'template_sxpuxdd';
 var EMAILJS_KEY      = 'taAiZImA6gXAx-iNI';
 // ============================================================
 // ADMINS — UIDs do Firebase (Google login)
@@ -838,7 +838,18 @@ async function enviarParaCoord(){
     email:USER.email||''
   };
   try{
-    await emailjs.send(EMAILJS_SERVICE,EMAILJS_TEMPLATE,params);
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params, {
+      publicKey: EMAILJS_KEY,
+      limitRate: { throttle: 2000 }
+    });
+    // Cópia para Ernandes via segundo envio silencioso
+    try {
+      var paramsCopia = Object.assign({}, params, {
+        to_email: 'ernandes.sobreira@unemat.br',
+        nome_estagiario: '[CÓPIA] ' + (params.nome_estagiario||'')
+      });
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, paramsCopia);
+    } catch(e2){ console.warn('Cópia Ernandes falhou:', e2); }
     ldgOff();
     DB.ref('estagio/'+USER.key+'/avaliacoes/'+avalAtualId).update({enviado_coord:true,data_envio:new Date().toISOString()});
     var btn=document.getElementById('btn_enviar_coord');
