@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação de Estágio — Ciências Biológicas UNEMAT</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+
+  :root {
+    --green-deep: #1a5c3a;
+    --green-mid: #2d7a52;
+    --green-light: #e8f5ee;
+    --green-accent: #4caf80;
+    --amber: #e8a020;
+    --amber-light: #fff8e8;
+    --slate: #2c3e50;
+    --slate-light: #f4f6f8;
+    --text: #1a2332;
+    --text-muted: #5a6a7a;
+    --border: #d4dde6;
+    --white: #ffffff;
+    --red: #c0392b;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(26,92,58,0.10);
+    --shadow-lg: 0 8px 32px rgba(26,92,58,0.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f4f1;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--green-deep);
+    color: white;
+    padding: 0;
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .header-logo {
+    width: 56px;
+    height: 56px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: white;
+  }
+  .header-text p {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+  }
+  .header-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  /* ── Stepper ── */
+  .stepper-wrap {
+    background: var(--green-deep);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 0 32px 20px;
+  }
+  .stepper {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px 10px 0;
+    opacity: 0.45;
+    transition: opacity .3s;
+    cursor: default;
+    position: relative;
+  }
+  .step.active { opacity: 1; }
+  .step.done { opacity: 0.7; }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+  .step.active .step-num {
+    background: var(--green-accent);
+    border-color: var(--green-accent);
+  }
+  .step.done .step-num {
+    background: rgba(255,255,255,0.35);
+    border-color: rgba(255,255,255,0.5);
+  }
+  .step-label {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .step-sep {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    align-self: center;
+    margin: 0 4px;
+  }
+
+  /* ── Main ── */
+  .main {
+    max-width: 860px;
+    margin: 32px auto 60px;
+    padding: 0 20px;
+  }
+
+  .panel {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    background: var(--green-light);
+    border-bottom: 2px solid var(--green-accent);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-header .ph-icon {
+    font-size: 20px;
+  }
+  .panel-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green-deep);
+  }
+  .panel-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+  .panel-body {
+    padding: 24px;
+  }
+
+  /* ── Field groups ── */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-grid.full { grid-template-columns: 1fr; }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .field input, .field textarea, .field select {
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: white;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(45,122,82,0.1);
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  /* ── Avaliação table ── */
+  .avaliacao-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .avaliacao-legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+  .leg-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .leg-dot.O { background: #2d7a52; }
+  .leg-dot.B { background: #3498db; }
+  .leg-dot.R { background: #e8a020; }
+  .leg-dot.I { background: #c0392b; }
+
+  .crit-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f4f1;
+  }
+  .crit-row:last-child { border-bottom: none; }
+  .crit-num {
+    width: 24px;
+    height: 24px;
+    background: var(--green-light);
+    border: 1.5px solid var(--green-accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green-deep);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .crit-text {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .crit-text strong {
+    display: block;
+    font-size: 12.5px;
+    color: var(--green-deep);
+    margin-bottom: 2px;
+  }
+  .crit-options {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .opt-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--border);
+    border-radius: 7px;
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .opt-btn:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  .opt-btn.selected-O { background: #2d7a52; border-color: #2d7a52; color: white; }
+  .opt-btn.selected-B { background: #3498db; border-color: #3498db; color: white; }
+  .opt-btn.selected-R { background: #e8a020; border-color: #e8a020; color: white; }
+  .opt-btn.selected-I { background: #c0392b; border-color: #c0392b; color: white; }
+
+  /* ── Nota ── */
+  .nota-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--amber-light);
+    border: 2px solid var(--amber);
+    border-radius: 9px;
+    margin-top: 20px;
+  }
+  .nota-wrap label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--slate);
+  }
+  .nota-input {
+    width: 80px;
+    border: 2px solid var(--amber);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--amber);
+    text-align: center;
+    outline: none;
+    background: white;
+  }
+  .nota-input:focus { box-shadow: 0 0 0 3px rgba(232,160,32,0.2); }
+  .nota-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  /* ── Assinatura / Identificação ── */
+  .assinatura-info {
+    background: #eef6ff;
+    border: 1.5px solid #b3d4f5;
+    border-radius: 9px;
+    padding: 14px 18px;
+    font-size: 12.5px;
+    color: #2c5f8a;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .assinatura-info .ai-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Progress bar ── */
+  .progress-bar-wrap {
+    background: #e8f5ee;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 7px;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-accent));
+    border-radius: 8px;
+    transition: width .5s ease;
+    width: 0%;
+  }
+
+  /* ── Buttons ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-secondary {
+    background: white;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--green-mid); color: var(--green-mid); }
+  .btn-primary {
+    background: var(--green-deep);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: var(--shadow); }
+  .btn-primary:disabled {
+    background: #b0c4b8;
+    cursor: not-allowed;
+  }
+  .btn-email {
+    background: var(--amber);
+    color: white;
+  }
+  .btn-email:hover { background: #c98a18; }
+  .btn-pdf {
+    background: #c0392b;
+    color: white;
+  }
+  .btn-pdf:hover { background: #a02d22; }
+
+  /* ── Review screen ── */
+  .review-section { margin-bottom: 20px; }
+  .review-section h3 {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 13px;
+    border-bottom: 1px dotted #eaeff3;
+  }
+  .review-row:last-child { border-bottom: none; }
+  .review-key { color: var(--text-muted); }
+  .review-val { font-weight: 600; color: var(--text); text-align: right; max-width: 55%; }
+  .review-nota {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1.5px solid var(--amber);
+  }
+  .badge-avaliacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+  }
+  .badge-avaliacao.O { background: #2d7a52; }
+  .badge-avaliacao.B { background: #3498db; }
+  .badge-avaliacao.R { background: #e8a020; }
+  .badge-avaliacao.I { background: #c0392b; }
+
+  /* ── Email preview ── */
+  .email-preview {
+    background: var(--slate-light);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-top: 12px;
+  }
+  .email-preview strong { color: var(--green-deep); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--green-deep);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    align-items: center;
+    gap: 9px;
+    z-index: 999;
+    max-width: 340px;
+  }
+  .toast.show { display: flex; animation: slideIn .3s ease; }
+  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ── Screen management ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── Validation indicator ── */
+  .val-error {
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 3px;
+    display: none;
+  }
+  .field.has-error input, .field.has-error textarea, .field.has-error select {
+    border-color: var(--red);
+  }
+  .field.has-error .val-error { display: block; }
+
+  @media (max-width: 600px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .field-grid.three { grid-template-columns: 1fr; }
+    .header-inner { flex-wrap: wrap; }
+    .header-badge { margin-left: 0; }
+    .crit-options { flex-wrap: wrap; }
+    .btn-row { flex-direction: column; }
+    .btn { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">🌿</div>
+    <div class="header-text">
+      <h1>Avaliação de Estágio Curricular Supervisionado</h1>
+      <p>Coordenação de Ciências Biológicas · UNEMAT Campus Cáceres · FACAB</p>
+    </div>
+    <div class="header-badge">2026/1</div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper-wrap">
+    <div class="stepper">
+      <div class="step active" id="step1">
+        <div class="step-num">1</div>
+        <div class="step-label">Identificação<br>do estágio</div>
+      </div>
+      <div class="step-sep"></div>
+      <div class="step" id="step2">
+        <div class="step-num">2</div>
+        <div class="step-label">Anexo II<br>Avaliação</div>
+      </div>
+      <div class="step-sep"></div>
+      <div class="step" id="step3">
+        <div class="step-num">3</div>
+        <div class="step-label">Anexo III<br>Avaliação</div>
+      </div>
+      <div class="step-sep"></div>
+      <div class="step" id="step4">
+        <div class="step-num">4</div>
+        <div class="step-label">Assinatura<br>& Envio</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- ============ SCREEN 1: IDENTIFICAÇÃO ============ -->
+  <div class="screen active" id="screen1">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">📋</span>
+        <div>
+          <h2>Dados do Estágio</h2>
+          <p>Preencha os dados gerais antes de iniciar a avaliação</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="field-grid full">
+          <div class="field" id="f-estagiario">
+            <label>Nome completo do(a) estagiário(a)</label>
+            <input type="text" id="estagiario" placeholder="Nome do(a) estudante">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="field-grid three">
+          <div class="field">
+            <label>Período letivo</label>
+            <select id="periodo">
+              <option value="2026/1">2026/1</option>
+              <option value="2026/2">2026/2</option>
+              <option value="2025/2">2025/2</option>
+              <option value="2025/1">2025/1</option>
+            </select>
+          </div>
+          <div class="field" id="f-inicio">
+            <label>Início do estágio</label>
+            <input type="date" id="inicio">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+          <div class="field" id="f-termino">
+            <label>Término do estágio</label>
+            <input type="date" id="termino">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="field-grid full">
+          <div class="field" id="f-local">
+            <label>Local do estágio</label>
+            <input type="text" id="local" placeholder="Instituição, empresa ou laboratório">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field" id="f-supervisor">
+            <label>Nome do(a) supervisor(a) de campo</label>
+            <input type="text" id="supervisor" placeholder="Supervisor(a) na instituição">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+          <div class="field">
+            <label>Coordenador(a) da disciplina</label>
+            <input type="text" id="coordenador" placeholder="Nome do(a) professor(a)">
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>E-mail do(a) coordenador(a)</label>
+            <input type="email" id="emailCoord" placeholder="email@unemat.br">
+          </div>
+          <div class="field">
+            <label>Carga horária total (horas)</label>
+            <input type="number" id="cargaHoraria" min="0" placeholder="Ex: 360">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goTo(2)">Próximo: Avaliação Anexo II →</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 2: ANEXO II ============ -->
+  <div class="screen" id="screen2">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">📝</span>
+        <div>
+          <h2>Anexo II — Ficha de Avaliação (Supervisor de Campo)</h2>
+          <p>5 critérios gerais de desempenho</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="avaliacao-legend">
+          <span class="leg-item"><span class="leg-dot O">O</span> Ótimo</span>
+          <span class="leg-item"><span class="leg-dot B">B</span> Bom</span>
+          <span class="leg-item"><span class="leg-dot R">R</span> Regular</span>
+          <span class="leg-item"><span class="leg-dot I">I</span> Insuficiente</span>
+        </div>
+
+        <div id="criterios-anexo2"></div>
+
+        <div class="field" style="margin-top:20px;">
+          <label>Comentários e/ou sugestões do supervisor</label>
+          <textarea id="comentariosA2" placeholder="Observações adicionais sobre o(a) estagiário(a)..." rows="4"></textarea>
+        </div>
+
+        <div class="nota-wrap">
+          <label>Nota final (0–10):</label>
+          <input type="number" class="nota-input" id="notaA2" min="0" max="10" step="0.1" placeholder="—">
+          <div class="nota-hint">Atribuída pelo supervisor de campo</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goTo(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Próximo: Avaliação Anexo III →</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 3: ANEXO III ============ -->
+  <div class="screen" id="screen3">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">🔬</span>
+        <div>
+          <h2>Anexo III — Ficha de Avaliação (Supervisor Acadêmico)</h2>
+          <p>8 critérios técnico-profissionais</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="avaliacao-legend">
+          <span class="leg-item"><span class="leg-dot O">O</span> Ótimo</span>
+          <span class="leg-item"><span class="leg-dot B">B</span> Bom</span>
+          <span class="leg-item"><span class="leg-dot R">R</span> Regular</span>
+          <span class="leg-item"><span class="leg-dot I">I</span> Insuficiente</span>
+        </div>
+
+        <div id="criterios-anexo3"></div>
+
+        <div class="nota-wrap">
+          <label>Nota final (0–10):</label>
+          <input type="number" class="nota-input" id="notaA3" min="0" max="10" step="0.1" placeholder="—">
+          <div class="nota-hint">Atribuída pelo supervisor acadêmico</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goTo(2)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Próximo: Assinatura & Envio →</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 4: ASSINATURA & ENVIO ============ -->
+  <div class="screen" id="screen4">
+
+    <!-- Revisão -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">✅</span>
+        <div>
+          <h2>Revisão da Avaliação</h2>
+          <p>Confira os dados antes de assinar e enviar</p>
+        </div>
+      </div>
+      <div class="panel-body" id="reviewContent">
+        <!-- preenchido por JS -->
+      </div>
+    </div>
+
+    <!-- Assinatura -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">✍️</span>
+        <div>
+          <h2>Identificação para Assinatura</h2>
+          <p>Dados do avaliador responsável</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="assinatura-info">
+          <span class="ai-icon">ℹ️</span>
+          <span>Para assinatura eletrônica via <strong>gov.br</strong>, o documento gerado deve ser carregado na plataforma <a href="https://assinador.iti.br" target="_blank" style="color:#2c5f8a;">assinador.iti.br</a> após o download do PDF. Preencha abaixo os dados do avaliador para compor o rodapé do documento.</span>
+        </div>
+        <div class="field-grid">
+          <div class="field" id="f-nomeAvaliador">
+            <label>Nome completo do avaliador</label>
+            <input type="text" id="nomeAvaliador" placeholder="Nome como consta no gov.br">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+          <div class="field" id="f-cargoAvaliador">
+            <label>Cargo / função</label>
+            <input type="text" id="cargoAvaliador" placeholder="Ex: Professor(a), Biólogo(a)">
+            <span class="val-error">Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>CPF do avaliador</label>
+            <input type="text" id="cpfAvaliador" placeholder="000.000.000-00" maxlength="14">
+          </div>
+          <div class="field">
+            <label>Data da avaliação</label>
+            <input type="date" id="dataAvaliacao">
+          </div>
+        </div>
+
+        <!-- Preview email -->
+        <div style="margin-top:20px;">
+          <div class="avaliacao-label">📧 Prévia do e-mail para coordenação</div>
+          <div class="email-preview" id="emailPreview">
+            <!-- gerado por JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goTo(3)">← Voltar</button>
+      <button class="btn btn-pdf" onclick="gerarPDF()">⬇ Baixar PDF</button>
+      <button class="btn btn-email" onclick="enviarEmail()">📧 Enviar por E-mail</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span>✅</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// =========================================================
+// DATA
+// =========================================================
+const criteriosAnexo2 = [
+  { id:'a2_1', label:'Cumprimento das atividades propostas no plano de trabalho' },
+  { id:'a2_2', label:'Qualidade do trabalho dentro de um padrão aceitável' },
+  { id:'a2_3', label:'Disposição para aprender' },
+  { id:'a2_4', label:'Formação profissional — conhecimento e habilidades técnicas desenvolvidas pela Universidade, necessários à formação do Profissional' },
+  { id:'a2_5', label:'Assiduidade e pontualidade no cumprimento dos horários e dias de atividades' },
+];
+
+const criteriosAnexo3 = [
+  { id:'a3_a', titulo:'Rendimento no estágio', label:'Qualidade, rapidez e precisão com os quais executa as tarefas constantes do plano de atividades.' },
+  { id:'a3_b', titulo:'Facilidade de compreensão', label:'Facilidade em interpretar, pôr em prática ou entender instruções.' },
+  { id:'a3_c', titulo:'Conhecimento', label:'Domínios demonstrados no desenvolvimento das atividades e no cumprimento das tarefas.' },
+  { id:'a3_d', titulo:'Organização e método de trabalho', label:'Capacidade de organizar as ações na confecção dos trabalhos.' },
+  { id:'a3_e', titulo:'Iniciativa e independência', label:'Capacidade de buscar soluções sem prévias orientações, dentro dos padrões adequados.' },
+  { id:'a3_f', titulo:'Comunicação', label:'Facilidade e espontaneidade com que age frente às situações.' },
+  { id:'a3_g', titulo:'Responsabilidade', label:'Cuidado e seriedade com que o estagiário desempenha suas atribuições.' },
+  { id:'a3_h', titulo:'Cooperação', label:'Atuação junto a outras pessoas no sentido de contribuir para o bem comum.' },
+];
+
+const avaliacoes = {};
+let currentScreen = 1;
+
+// =========================================================
+// BUILD CRITERIOS
+// =========================================================
+function buildCriterios(container, criterios, prefix) {
+  criterios.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'crit-row';
+    row.innerHTML = `
+      <div class="crit-num">${prefix === 'A2' ? i+1 : String.fromCharCode(97+i)}</div>
+      <div class="crit-text">
+        ${c.titulo ? `<strong>${c.titulo}</strong>` : ''}
+        ${c.label}
+      </div>
+      <div class="crit-options">
+        ${['O','B','R','I'].map(o =>
+          `<button class="opt-btn" data-id="${c.id}" data-val="${o}" onclick="selectOpt('${c.id}','${o}',this)">${o}</button>`
+        ).join('')}
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function selectOpt(id, val, btn) {
+  avaliacoes[id] = val;
+  const parent = btn.closest('.crit-options');
+  parent.querySelectorAll('.opt-btn').forEach(b => {
+    b.className = 'opt-btn';
+  });
+  btn.classList.add('selected-' + val);
+  updateProgress();
+}
+
+// =========================================================
+// PROGRESS
+// =========================================================
+function updateProgress() {
+  const total = criteriosAnexo2.length + criteriosAnexo3.length;
+  const filled = Object.keys(avaliacoes).length;
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// =========================================================
+// NAVIGATION
+// =========================================================
+function goTo(n) {
+  if (n > 1 && !validateScreen(currentScreen)) return;
+
+  document.getElementById('screen' + currentScreen).classList.remove('active');
+  document.getElementById('step' + currentScreen).classList.remove('active');
+  document.getElementById('step' + currentScreen).classList.add('done');
+
+  currentScreen = n;
+  document.getElementById('screen' + n).classList.add('active');
+  document.getElementById('step' + n).classList.remove('done');
+  document.getElementById('step' + n).classList.add('active');
+
+  if (n === 4) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =========================================================
+// VALIDATE
+// =========================================================
+function validateScreen(n) {
+  if (n === 1) {
+    const required = ['estagiario','inicio','termino','local','supervisor'];
+    const ids = ['f-estagiario','f-inicio','f-termino','f-local','f-supervisor'];
+    let ok = true;
+    required.forEach((id, i) => {
+      const el = document.getElementById(id);
+      const wrap = document.getElementById(ids[i]);
+      if (!el.value.trim()) {
+        wrap.classList.add('has-error');
+        ok = false;
+      } else {
+        wrap.classList.remove('has-error');
+      }
+    });
+    if (!ok) { showToast('Preencha todos os campos obrigatórios.', '⚠️'); return false; }
+  }
+  return true;
+}
+
+// =========================================================
+// REVIEW
+// =========================================================
+function buildReview() {
+  const rv = document.getElementById('reviewContent');
+  rv.innerHTML = '';
+
+  // Dados gerais
+  rv.innerHTML += `
+    <div class="review-section">
+      <h3>Identificação do Estágio</h3>
+      <div class="review-row"><span class="review-key">Estagiário(a)</span><span class="review-val">${v('estagiario')}</span></div>
+      <div class="review-row"><span class="review-key">Período letivo</span><span class="review-val">${v('periodo')}</span></div>
+      <div class="review-row"><span class="review-key">Início — Término</span><span class="review-val">${fmt(v('inicio'))} — ${fmt(v('termino'))}</span></div>
+      <div class="review-row"><span class="review-key">Local</span><span class="review-val">${v('local')}</span></div>
+      <div class="review-row"><span class="review-key">Supervisor(a) de campo</span><span class="review-val">${v('supervisor')}</span></div>
+      <div class="review-row"><span class="review-key">Carga horária</span><span class="review-val">${v('cargaHoraria') || '—'} h</span></div>
+    </div>`;
+
+  // Anexo II
+  let a2rows = criteriosAnexo2.map((c,i) => {
+    const av = avaliacoes[c.id];
+    return `<div class="review-row"><span class="review-key">${i+1}. ${c.label.substring(0,50)}…</span><span class="review-val">${av ? `<span class="badge-avaliacao ${av}">${av}</span>` : '<em style="color:#aaa">Não avaliado</em>'}</span></div>`;
+  }).join('');
+  rv.innerHTML += `
+    <div class="review-section">
+      <h3>Anexo II — Avaliação Geral</h3>
+      ${a2rows}
+      <div class="review-row"><span class="review-key">Nota Anexo II</span><span class="review-val"><span class="review-nota">${v('notaA2') || '—'}</span></span></div>
+    </div>`;
+
+  // Anexo III
+  let a3rows = criteriosAnexo3.map((c,i) => {
+    const av = avaliacoes[c.id];
+    return `<div class="review-row"><span class="review-key">${String.fromCharCode(97+i)}. ${c.titulo}</span><span class="review-val">${av ? `<span class="badge-avaliacao ${av}">${av}</span>` : '<em style="color:#aaa">Não avaliado</em>'}</span></div>`;
+  }).join('');
+  rv.innerHTML += `
+    <div class="review-section">
+      <h3>Anexo III — Critérios Técnico-Profissionais</h3>
+      ${a3rows}
+      <div class="review-row"><span class="review-key">Nota Anexo III</span><span class="review-val"><span class="review-nota">${v('notaA3') || '—'}</span></span></div>
+    </div>`;
+
+  updateEmailPreview();
+
+  // CPF mask
+  document.getElementById('cpfAvaliador').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g,'').substring(0,11);
+    if (val.length > 9) val = val.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');
+    else if (val.length > 6) val = val.replace(/(\d{3})(\d{3})(\d+)/,'$1.$2.$3');
+    else if (val.length > 3) val = val.replace(/(\d{3})(\d+)/,'$1.$2');
+    this.value = val;
+    updateEmailPreview();
+  });
+
+  ['nomeAvaliador','cargoAvaliador','dataAvaliacao'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateEmailPreview);
+  });
+
+  // set today
+  if (!document.getElementById('dataAvaliacao').value) {
+    document.getElementById('dataAvaliacao').value = new Date().toISOString().split('T')[0];
+  }
+}
+
+function updateEmailPreview() {
+  const prev = document.getElementById('emailPreview');
+  const nome = v('nomeAvaliador') || '[Nome do Avaliador]';
+  const estagiario = v('estagiario') || '[Nome do Estagiário]';
+  const coordenador = v('coordenador') || '[Nome da Coordenação]';
+  const data = fmt(v('dataAvaliacao'));
+  const notaA2 = v('notaA2') || '—';
+  const notaA3 = v('notaA3') || '—';
+
+  prev.innerHTML = `
+    <strong>Para:</strong> ${v('emailCoord') || 'biologia@unemat.br'}<br>
+    <strong>Assunto:</strong> Avaliação de Estágio — ${estagiario} — ${v('periodo') || '2026/1'}<br><br>
+    Prezado(a) ${coordenador},<br><br>
+    Encaminho a avaliação de estágio curricular supervisionado do(a) aluno(a) <strong>${estagiario}</strong>, referente ao período <strong>${v('periodo') || '2026/1'}</strong>.<br><br>
+    Nota Anexo II: <strong>${notaA2}</strong> &nbsp;|&nbsp; Nota Anexo III: <strong>${notaA3}</strong><br><br>
+    O documento completo segue em anexo (PDF), assinado eletronicamente via gov.br.<br><br>
+    Atenciosamente,<br>
+    <strong>${nome}</strong> — ${v('cargoAvaliador') || '[Cargo]'}<br>
+    ${data}`;
+}
+
+// =========================================================
+// PDF GENERATION
+// =========================================================
+function gerarPDF() {
+  if (!validateAssinatura()) return;
+
+  const avalMap = { O: 'Ótimo', B: 'Bom', R: 'Regular', I: 'Insuficiente' };
+
+  let a2Table = criteriosAnexo2.map((c,i) => {
+    const av = avaliacoes[c.id] || '';
+    return `<tr>
+      <td style="width:36px;text-align:center;font-weight:700;color:#1a5c3a">${i+1}</td>
+      <td>${c.label}</td>
+      <td style="width:32px;text-align:center">${av === 'O' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'B' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'R' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'I' ? '●' : '○'}</td>
+    </tr>`;
+  }).join('');
+
+  let a3Table = criteriosAnexo3.map((c,i) => {
+    const av = avaliacoes[c.id] || '';
+    return `<tr>
+      <td style="width:28px;text-align:center;font-weight:700;color:#1a5c3a">${String.fromCharCode(97+i)}</td>
+      <td><strong>${c.titulo}</strong><br><small style="color:#555">${c.label}</small></td>
+      <td style="width:32px;text-align:center">${av === 'O' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'B' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'R' ? '●' : '○'}</td>
+      <td style="width:32px;text-align:center">${av === 'I' ? '●' : '○'}</td>
+    </tr>`;
+  }).join('');
+
+  const hashId = 'DOC-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,7).toUpperCase();
+
+  const pdfWin = window.open('', '_blank');
+  pdfWin.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Avaliação de Estágio — ${v('estagiario')}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; color: #111; margin: 0; padding: 0; }
+    .page { max-width: 720px; margin: 0 auto; padding: 28px 32px; }
+    .inst-header { text-align: center; border-bottom: 2px solid #1a5c3a; padding-bottom: 10px; margin-bottom: 14px; }
+    .inst-header p { margin: 1px 0; font-size: 9.5pt; font-weight: 700; color: #1a5c3a; }
+    .titulo { font-size: 13pt; font-weight: 700; text-align: center; margin: 10px 0 14px; color: #1a2332; }
+    .anexo-tag { display: inline-block; background: #1a5c3a; color: white; font-size: 9pt; font-weight: 700; padding: 3px 12px; border-radius: 4px; margin-bottom: 10px; }
+    .dados-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .dado { border-bottom: 1px solid #ccc; padding: 3px 0; font-size: 10.5pt; }
+    .dado-label { font-size: 8pt; color: #666; text-transform: uppercase; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10pt; }
+    th { background: #1a5c3a; color: white; padding: 5px 8px; font-size: 9.5pt; }
+    td { padding: 6px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+    .nota-box { border: 2px solid #e8a020; border-radius: 6px; padding: 8px 16px; display: inline-block; font-size: 16pt; font-weight: 700; color: #e8a020; margin: 8px 0; }
+    .comentarios { border: 1px solid #ccc; border-radius: 5px; padding: 10px; min-height: 50px; margin: 8px 0 14px; font-size: 10pt; color: #333; }
+    .assinatura-block { margin-top: 24px; border-top: 1px solid #ccc; padding-top: 14px; }
+    .assinatura-linha { border-bottom: 1px solid #333; width: 340px; height: 40px; margin: 0 auto; }
+    .assinatura-nome { text-align: center; margin-top: 4px; font-size: 10pt; }
+    .hash-footer { margin-top: 20px; padding: 6px 10px; background: #f4f6f8; border-radius: 4px; font-size: 7.5pt; color: #888; font-family: monospace; text-align: center; }
+    .page-break { page-break-after: always; }
+    @media print { body { margin: 0; } .page { padding: 20px; } }
+  </style>
+  </head><body>
+  <div class="page">
+    <!-- ANEXO II -->
+    <div class="inst-header">
+      <p>GOVERNO DO ESTADO DE MATO GROSSO</p>
+      <p>SECRETARIA DE ESTADO DE CIÊNCIA E TECNOLOGIA</p>
+      <p>UNIVERSIDADE DO ESTADO DE MATO GROSSO — UNEMAT</p>
+      <p>CAMPUS UNIVERSITÁRIO DE CÁCERES · FACULDADE DE CIÊNCIAS AGRÁRIAS E BIOLÓGICAS</p>
+      <p>COORDENAÇÃO DO CURSO DE CIÊNCIAS BIOLÓGICAS</p>
+    </div>
+
+    <div class="titulo">ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</div>
+    <div><span class="anexo-tag">ANEXO II</span></div>
+
+    <div class="dados-grid">
+      <div class="dado"><div class="dado-label">Estagiário(a)</div>${v('estagiario')}</div>
+      <div class="dado"><div class="dado-label">Período letivo</div>${v('periodo')}</div>
+      <div class="dado"><div class="dado-label">Início do estágio</div>${fmt(v('inicio'))}</div>
+      <div class="dado"><div class="dado-label">Término do estágio</div>${fmt(v('termino'))}</div>
+      <div class="dado" style="grid-column:span 2"><div class="dado-label">Local do estágio</div>${v('local')}</div>
+      <div class="dado" style="grid-column:span 2"><div class="dado-label">Supervisor(a)</div>${v('supervisor')}</div>
+    </div>
+
+    <p style="font-size:9.5pt;margin-bottom:6px;"><strong>AVALIAÇÕES:</strong> (O) Ótimo &nbsp; (B) Bom &nbsp; (R) Regular &nbsp; (I) Insuficiente</p>
+    <table>
+      <tr><th>#</th><th>Aspecto avaliado</th><th>O</th><th>B</th><th>R</th><th>I</th></tr>
+      ${a2Table}
+    </table>
+
+    <p style="margin-bottom:4px;font-size:9.5pt;font-weight:700;">Comentários e/ou sugestões do Supervisor de Estágio:</p>
+    <div class="comentarios">${v('comentariosA2') || '&nbsp;'}</div>
+
+    <div>Nota final (0–10): <span class="nota-box">${v('notaA2') || '—'}</span></div>
+
+    <div class="assinatura-block">
+      <div>DATA: ${fmt(v('dataAvaliacao'))}</div><br>
+      <div class="assinatura-linha"></div>
+      <div class="assinatura-nome"><strong>${v('nomeAvaliador')}</strong> — ${v('cargoAvaliador')}<br>
+      ${v('cpfAvaliador') ? 'CPF: ' + v('cpfAvaliador') : ''}</div>
+    </div>
+    <div class="hash-footer">ID do documento: ${hashId} · Gerado em: ${new Date().toLocaleString('pt-BR')} · Para assinatura digital via gov.br: assinador.iti.br</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="page">
+    <!-- ANEXO III -->
+    <div class="inst-header">
+      <p>GOVERNO DO ESTADO DE MATO GROSSO</p>
+      <p>UNIVERSIDADE DO ESTADO DE MATO GROSSO — UNEMAT</p>
+      <p>CAMPUS UNIVERSITÁRIO DE CÁCERES · FACULDADE DE CIÊNCIAS AGRÁRIAS E BIOLÓGICAS</p>
+      <p>COORDENAÇÃO DO CURSO DE CIÊNCIAS BIOLÓGICAS</p>
+    </div>
+
+    <div class="titulo">ESTÁGIO CURRICULAR SUPERVISIONADO<br>FICHA DE AVALIAÇÃO DO(A) ESTAGIÁRIO(A)</div>
+    <div><span class="anexo-tag">ANEXO III</span></div>
+
+    <div class="dados-grid">
+      <div class="dado"><div class="dado-label">Estagiário(a)</div>${v('estagiario')}</div>
+      <div class="dado"><div class="dado-label">Semestre letivo</div>${v('periodo')}</div>
+      <div class="dado"><div class="dado-label">Início do estágio</div>${fmt(v('inicio'))}</div>
+      <div class="dado"><div class="dado-label">Término do estágio</div>${fmt(v('termino'))}</div>
+      <div class="dado" style="grid-column:span 2"><div class="dado-label">Local do estágio</div>${v('local')}</div>
+      <div class="dado" style="grid-column:span 2"><div class="dado-label">Supervisor(a)</div>${v('supervisor')}</div>
+    </div>
+
+    <p style="font-size:9.5pt;margin-bottom:6px;"><strong>AVALIAÇÕES:</strong> (O) Ótimo &nbsp; (B) Bom &nbsp; (R) Regular &nbsp; (I) Insuficiente</p>
+    <table>
+      <tr><th>#</th><th>Aspecto técnico-profissional</th><th>O</th><th>B</th><th>R</th><th>I</th></tr>
+      ${a3Table}
+    </table>
+
+    <div>Nota final (0–10): <span class="nota-box">${v('notaA3') || '—'}</span></div>
+
+    <div class="assinatura-block">
+      <div>DATA: ${fmt(v('dataAvaliacao'))}</div><br>
+      <div class="assinatura-linha"></div>
+      <div class="assinatura-nome"><strong>${v('nomeAvaliador')}</strong> — ${v('cargoAvaliador')}<br>
+      ${v('cpfAvaliador') ? 'CPF: ' + v('cpfAvaliador') : ''}
+      <br><br>Coordenação de Curso de Ciências Biológicas – Campus Cáceres<br>
+      Av. São João, n° 563 – Cavalhada – Cáceres/MT – CEP 78.200-000<br>
+      Tel. (65) 3221-0538 · biologia@unemat.br</div>
+    </div>
+    <div class="hash-footer">ID do documento: ${hashId} · Gerado em: ${new Date().toLocaleString('pt-BR')} · Para assinatura digital via gov.br: assinador.iti.br</div>
+  </div>
+
+  <script>window.onload = () => window.print();<\/script>
+  </body></html>`);
+  pdfWin.document.close();
+  showToast('PDF gerado. Use Ctrl+P para salvar como PDF.');
+}
+
+// =========================================================
+// EMAIL
+// =========================================================
+function enviarEmail() {
+  if (!validateAssinatura()) return;
+
+  const coordEmail = v('emailCoord') || 'biologia@unemat.br';
+  const estagiario = v('estagiario');
+  const periodo = v('periodo');
+  const nome = v('nomeAvaliador');
+  const cargo = v('cargoAvaliador');
+  const notaA2 = v('notaA2') || '—';
+  const notaA3 = v('notaA3') || '—';
+  const coordenador = v('coordenador') || 'Coordenação';
+  const data = fmt(v('dataAvaliacao'));
+
+  const subject = encodeURIComponent(`Avaliação de Estágio — ${estagiario} — ${periodo}`);
+  const body = encodeURIComponent(
+`Prezado(a) ${coordenador},
+
+Encaminho a avaliação de estágio curricular supervisionado do(a) aluno(a) ${estagiario}, referente ao período ${periodo}.
+
+Nota Anexo II (Supervisor de Campo): ${notaA2}
+Nota Anexo III (Critérios Técnicos): ${notaA3}
+
+Favor encontrar o documento completo em anexo (PDF gerado pela plataforma), assinado eletronicamente via gov.br (assinador.iti.br).
+
+Observações: ${v('comentariosA2') || 'Nenhuma observação adicional.'}
+
+Atenciosamente,
+${nome}
+${cargo}
+${data}
+
+---
+Enviado via Plataforma de Avaliação de Estágio — Coordenação de Ciências Biológicas · UNEMAT Cáceres`);
+
+  window.location.href = `mailto:${coordEmail}?subject=${subject}&body=${body}`;
+  showToast('Cliente de e-mail aberto. Anexe o PDF antes de enviar.');
+}
+
+function validateAssinatura() {
+  let ok = true;
+  ['nomeAvaliador','cargoAvaliador'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    const wrap = document.getElementById('f-' + id);
+    if (!el.value.trim()) {
+      wrap.classList.add('has-error');
+      ok = false;
+    } else {
+      wrap.classList.remove('has-error');
+    }
+  });
+  if (!ok) showToast('Preencha nome e cargo do avaliador.', '⚠️');
+  return ok;
+}
+
+// =========================================================
+// HELPERS
+// =========================================================
+function v(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  return el.value || '';
+}
+
+function fmt(d) {
+  if (!d) return '—';
+  const parts = d.split('-');
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return d;
+}
+
+function showToast(msg, icon) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.querySelector('span').textContent = icon || '✅';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// =========================================================
+// INIT
+// =========================================================
+buildCriterios(document.getElementById('criterios-anexo2'), criteriosAnexo2, 'A2');
+buildCriterios(document.getElementById('criterios-anexo3'), criteriosAnexo3, 'A3');
+updateProgress();
+</script>
+</body>
+</html>
