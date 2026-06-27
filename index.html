@@ -120,6 +120,21 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 .al{padding:10px 15px;border-radius:8px;font-size:.88rem;margin:10px 0;font-weight:600;display:none}
 .al.err{background:#fee2e2;color:#7f1d1d;border:1.5px solid #fca5a5;display:block}
 
+/* ── SELETOR DE PAPEL GLOBAL ── */
+#s-role{background:#f0f4f1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.role-wrap{max-width:600px;width:100%;text-align:center}
+.role-wrap .logo-role{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:block}
+.role-wrap h2{font-size:1.4rem;font-weight:700;color:var(--gre);margin-bottom:6px}
+.role-wrap p{color:var(--cs);font-size:.9rem;margin-bottom:28px}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.role-card{background:#fff;border:2px solid var(--grb);border-radius:14px;padding:28px 20px;cursor:pointer;transition:all .2s;text-align:center}
+.role-card:hover{border-color:var(--grm);box-shadow:0 6px 24px rgba(26,92,58,.15);transform:translateY(-2px)}
+.role-card.selected{border-color:var(--gr);background:var(--grl)}
+.role-card .rc-icon{font-size:2.4rem;margin-bottom:10px}
+.role-card h3{font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:4px}
+.role-card p{font-size:.82rem;color:var(--cs);margin:0}
+@media(max-width:480px){.role-cards{grid-template-columns:1fr}}
+
 /* ── PLANO DE ATIVIDADES ── */
 .role-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700}
 .role-aluno{background:#dbeafe;color:#1e40af}
@@ -167,6 +182,7 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
     <button onclick="aba('plano')">Plano de Atividades</button>
     <button onclick="aba('docs')">Meus Documentos</button>
     <button id="btn_admin" style="display:none" onclick="aba('admin')">&#128274; Admin</button>
+    <button class="sair" onclick="trocarPapel()" style="opacity:.65;font-size:.82rem">Trocar papel</button>
     <button class="sair" onclick="sair()">Sair</button>
   </nav>
 </header>
@@ -192,6 +208,30 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 </div>
 
 <!-- INÍCIO -->
+<!-- ROLE SELECTION SCREEN -->
+<div class="sec" id="s-role">
+  <div id="s-role" style="display:flex;align-items:center;justify-content:center;padding:40px 20px;min-height:60vh">
+    <div style="max-width:560px;width:100%;text-align:center">
+      <img id="roleLogoImg" style="width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:block" alt="Logo"/>
+      <h2 style="font-size:1.35rem;font-weight:700;color:var(--gre);margin-bottom:6px">Como você vai usar o sistema?</h2>
+      <p style="color:var(--cs);font-size:.9rem;margin-bottom:28px">Escolha seu papel. Você pode trocar a qualquer momento pelo menu.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div onclick="escolherPapel('aluno')" style="background:#fff;border:2.5px solid var(--grb);border-radius:14px;padding:28px 16px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--grm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--grb)';this.style.transform=''">
+          <div style="font-size:2.4rem;margin-bottom:10px">🎓</div>
+          <h3 style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:5px">Sou Aluno</h3>
+          <p style="font-size:.82rem;color:var(--cs);margin:0">Submeter plano de atividades e acompanhar status</p>
+        </div>
+        <div onclick="escolherPapel('prof')" style="background:#fff;border:2.5px solid var(--grb);border-radius:14px;padding:28px 16px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--grm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--grb)';this.style.transform=''">
+          <div style="font-size:2.4rem;margin-bottom:10px">👨‍🏫</div>
+          <h3 style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:5px">Sou Professor</h3>
+          <p style="font-size:.82rem;color:var(--cs);margin:0">Validar planos de alunos e realizar avaliações</p>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:#9ca3af">Logado como: <strong id="role_user_email"></strong></div>
+    </div>
+  </div>
+</div>
+
 <div class="sec" id="s-inicio">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
     <h2 style="color:var(--gre);font-size:1.2rem">Bem-vindo(a)!</h2>
@@ -532,7 +572,20 @@ window.addEventListener('DOMContentLoaded', function(){
       document.getElementById('a_avemail').value=USER.email;
       carregarPerfil();
       mostrarAdmin();
-      aba('inicio');
+      // Go to role selection first
+      var papelSalvo = sessionStorage.getItem('papel_' + user.uid);
+      if (papelSalvo) {
+        aplicarPapel(papelSalvo);
+      } else {
+        // Show role selection
+        document.getElementById('nav').style.display = 'none';
+        document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
+        document.getElementById('s-role').classList.add('on');
+        var re = document.getElementById('role_user_email');
+        if (re) re.textContent = user.email;
+        var rl = document.getElementById('roleLogoImg');
+        if (rl) rl.src = LU;
+      }
     }else{
       USER=null;
       document.getElementById('nav').style.display='none';
@@ -629,6 +682,58 @@ function aba(id){
   if(id==='inicio')renderStats();
   if(id==='admin')carregarAdmin();
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============================================================
+// PAPEL DO USUÁRIO (Aluno / Professor)
+// ============================================================
+var PAPEL_ATUAL = null;
+
+function escolherPapel(papel) {
+  sessionStorage.setItem('papel_' + USER.key, papel);
+  aplicarPapel(papel);
+}
+
+function aplicarPapel(papel) {
+  PAPEL_ATUAL = papel;
+  document.getElementById('nav').style.display = 'flex';
+  var nav = document.getElementById('nav');
+
+  // Show/hide nav items based on role
+  var btns = nav.querySelectorAll('button:not(.sair)');
+  btns.forEach(function(b){ b.style.display = 'none'; });
+
+  if (papel === 'aluno') {
+    // Aluno: Início, Plano de Atividades, Meus Documentos (só avaliações suas)
+    btns[0].style.display = 'block'; // Início
+    btns[2].style.display = 'block'; // Plano de Atividades
+    btns[3].style.display = 'block'; // Meus Documentos
+    // Update home cards for student
+    document.getElementById('ub_c').textContent = USER.email + ' · 🎓 Aluno';
+  } else {
+    // Professor: tudo visível
+    btns.forEach(function(b){ b.style.display = 'block'; });
+    mostrarAdmin();
+    document.getElementById('ub_c').textContent = USER.email + ' · 👨‍🏫 Professor';
+  }
+
+  // Update plano role if in plano section
+  if (papel === 'aluno') {
+    setPlanoRole('aluno');
+  }
+
+  aba('inicio');
+  renderStats();
+}
+
+function trocarPapel() {
+  sessionStorage.removeItem('papel_' + USER.key);
+  PAPEL_ATUAL = null;
+  document.getElementById('nav').style.display = 'none';
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
+  document.getElementById('s-role').classList.add('on');
+  var re = document.getElementById('role_user_email');
+  if (re) re.textContent = USER.email;
 }
 
 // ============================================================
@@ -1783,12 +1888,20 @@ aba = function(id) {
     document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
     var el=document.getElementById('s-plano');if(el)el.classList.add('on');
     document.querySelectorAll('nav button:not(.sair)').forEach(function(b){b.classList.remove('on');});
-    // Show selector, hide both role panels
-    document.getElementById('plano_role_sel').style.display='block';
-    document.getElementById('plano_aluno').style.display='none';
-    document.getElementById('plano_prof').style.display='none';
-    planoRole = null;
     window.scrollTo({top:0,behavior:'smooth'});
+    // Use global role if set, otherwise show selector
+    if (PAPEL_ATUAL === 'aluno') {
+      document.getElementById('plano_role_sel').style.display='none';
+      setPlanoRole('aluno');
+    } else if (PAPEL_ATUAL === 'prof') {
+      document.getElementById('plano_role_sel').style.display='none';
+      setPlanoRole('prof');
+    } else {
+      document.getElementById('plano_role_sel').style.display='block';
+      document.getElementById('plano_aluno').style.display='none';
+      document.getElementById('plano_prof').style.display='none';
+      planoRole = null;
+    }
     return;
   }
   _abaOriginal(id);
