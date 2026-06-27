@@ -182,7 +182,6 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
     <button onclick="aba('plano')">Plano de Atividades</button>
     <button onclick="aba('docs')">Meus Documentos</button>
     <button id="btn_admin" style="display:none" onclick="aba('admin')">&#128274; Admin</button>
-    <button class="sair" onclick="trocarPapel()" style="opacity:.65;font-size:.82rem">Trocar papel</button>
     <button class="sair" onclick="sair()">Sair</button>
   </nav>
 </header>
@@ -208,30 +207,6 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 </div>
 
 <!-- INÍCIO -->
-<!-- ROLE SELECTION SCREEN -->
-<div class="sec" id="s-role">
-  <div id="s-role" style="display:flex;align-items:center;justify-content:center;padding:40px 20px;min-height:60vh">
-    <div style="max-width:560px;width:100%;text-align:center">
-      <img id="roleLogoImg" style="width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:block" alt="Logo"/>
-      <h2 style="font-size:1.35rem;font-weight:700;color:var(--gre);margin-bottom:6px">Como você vai usar o sistema?</h2>
-      <p style="color:var(--cs);font-size:.9rem;margin-bottom:28px">Escolha seu papel. Você pode trocar a qualquer momento pelo menu.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-        <div onclick="escolherPapel('aluno')" style="background:#fff;border:2.5px solid var(--grb);border-radius:14px;padding:28px 16px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--grm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--grb)';this.style.transform=''">
-          <div style="font-size:2.4rem;margin-bottom:10px">🎓</div>
-          <h3 style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:5px">Sou Aluno</h3>
-          <p style="font-size:.82rem;color:var(--cs);margin:0">Submeter plano de atividades e acompanhar status</p>
-        </div>
-        <div onclick="escolherPapel('prof')" style="background:#fff;border:2.5px solid var(--grb);border-radius:14px;padding:28px 16px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--grm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--grb)';this.style.transform=''">
-          <div style="font-size:2.4rem;margin-bottom:10px">👨‍🏫</div>
-          <h3 style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:5px">Sou Professor</h3>
-          <p style="font-size:.82rem;color:var(--cs);margin:0">Validar planos de alunos e realizar avaliações</p>
-        </div>
-      </div>
-      <div style="font-size:.78rem;color:#9ca3af">Logado como: <strong id="role_user_email"></strong></div>
-    </div>
-  </div>
-</div>
-
 <div class="sec" id="s-inicio">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
     <h2 style="color:var(--gre);font-size:1.2rem">Bem-vindo(a)!</h2>
@@ -346,10 +321,55 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 <!-- ADMIN -->
 <div class="sec" id="s-admin">
   <div id="admin_resumo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px"></div>
-  <div class="card">
-    <div class="ctit" style="color:var(--gr)">🔒 Painel Administrativo — Todas as Avaliações</div>
-    <div style="margin-bottom:12px;font-size:.88rem;color:#4a5a6e">Visível apenas para administradores do sistema.</div>
-    <div id="admin_lista"><div class="vz">Carregando...</div></div>
+
+  <!-- Tabs admin -->
+  <div style="display:flex;gap:0;margin-bottom:18px;border-bottom:2px solid var(--grb)">
+    <button id="atab_aval" onclick="adminTab('aval')" style="background:var(--gr);color:#fff;border:none;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px 8px 0 0;font-family:inherit">📋 Avaliações</button>
+    <button id="atab_profs" onclick="adminTab('profs')" style="background:transparent;color:var(--gr);border:none;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px 8px 0 0;font-family:inherit">👨‍🏫 Professores</button>
+    <button id="atab_planos" onclick="adminTab('planos')" style="background:transparent;color:var(--gr);border:none;padding:10px 22px;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px 8px 0 0;font-family:inherit">📄 Planos</button>
+  </div>
+
+  <!-- Tab: Avaliações -->
+  <div id="adminTab_aval">
+    <div class="card">
+      <div class="ctit" style="color:var(--gr)">🔒 Todas as Avaliações</div>
+      <div style="margin-bottom:12px;font-size:.88rem;color:#4a5a6e">Visível apenas para administradores do sistema.</div>
+      <div id="admin_lista"><div class="vz">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: Professores -->
+  <div id="adminTab_profs" style="display:none">
+    <div class="card">
+      <div class="ctit" style="color:var(--gr)">👨‍🏫 Gerenciar Professores</div>
+      <div style="font-size:.85rem;color:#4a5a6e;margin-bottom:16px">Professores cadastrados têm acesso ao modo professor: validam planos, fazem avaliações e veem tudo no sistema.</div>
+
+      <!-- Adicionar professor -->
+      <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+        <div class="f" style="flex:1;min-width:220px">
+          <label>Nome do professor</label>
+          <input id="new_prof_nome" type="text" placeholder="Prof. Dr. Fulano de Tal"/>
+        </div>
+        <div class="f" style="flex:1;min-width:220px">
+          <label>E-mail institucional</label>
+          <input id="new_prof_email" type="email" placeholder="professor@unemat.br"/>
+        </div>
+        <div class="f" style="flex:0;align-self:flex-end">
+          <button class="btn bp" onclick="adicionarProfessor()" style="white-space:nowrap">+ Cadastrar</button>
+        </div>
+      </div>
+
+      <!-- Lista de professores -->
+      <div id="lista_professores"><div class="vz">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- Tab: Planos -->
+  <div id="adminTab_planos" style="display:none">
+    <div class="card">
+      <div class="ctit" style="color:var(--gr)">📄 Todos os Planos de Atividades</div>
+      <div id="admin_lista_planos"><div class="vz">Carregando...</div></div>
+    </div>
   </div>
 </div>
 
@@ -359,21 +379,8 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 <!-- ============ SCREEN PLANO ============ -->
 <div class="sec" id="s-plano">
 
-  <!-- Seletor de papel -->
-  <div id="plano_role_sel" style="margin-bottom:18px">
-    <div class="card" style="padding:18px 22px">
-      <div style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:6px">Plano de Atividades do Acadêmico</div>
-      <div style="font-size:.88rem;color:var(--cs);margin-bottom:14px">Escolha como deseja acessar esta seção:</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="btn bp" onclick="setPlanoRole('aluno')" style="flex:1;justify-content:center;padding:13px;font-size:.95rem">
-          🎓 Sou Aluno<div style="font-size:.78rem;font-weight:400;margin-top:3px;opacity:.85">Preencher e submeter plano</div>
-        </button>
-        <button class="btn" style="background:#166534;color:#fff;flex:1;justify-content:center;padding:13px;font-size:.95rem" onclick="setPlanoRole('prof')">
-          👨‍🏫 Sou Professor<div style="font-size:.78rem;font-weight:400;margin-top:3px;opacity:.85">Revisar e validar planos</div>
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- papel definido automaticamente -->
+  <div id="plano_role_sel" style="display:none"></div>
 
   <!-- ALUNO: formulário de plano -->
   <div id="plano_aluno" style="display:none">
@@ -525,6 +532,22 @@ var ADMINS = [
   'Rua8saphm3eMs7cUpgjg2CSbNiI3',  // Alessandra Morini
 ];
 
+// ── E-mails de professores (acesso automático ao modo professor) ──
+// Adicione aqui o e-mail de cada professor que pode validar planos
+var PROFESSORES = [
+  'ernandes.sobreira@unemat.br',
+  'ernandes.sobreira@gmail.com',
+  'aetmorini@unemat.br',
+  // Adicione outros professores aqui:
+  // 'outro.professor@unemat.br',
+];
+
+function isProfessor() {
+  if (!USER) return false;
+  var email = (USER.email || '').toLowerCase().trim();
+  return PROFESSORES.some(function(p){ return p.toLowerCase().trim() === email; });
+}
+
 // ============================================================
 // DADOS
 // ============================================================
@@ -561,6 +584,14 @@ window.addEventListener('DOMContentLoaded', function(){
     firebase.initializeApp(FIREBASE_CONFIG);
     DB=firebase.database();
     if(typeof emailjs!=='undefined') emailjs.init(EMAILJS_KEY);
+    // Pre-load professors from DB so isProfessor() works correctly on login
+    DB.ref('config/professores').once('value').then(function(snap){
+      var dados = snap.val() || {};
+      Object.values(dados).forEach(function(p){
+        var email = (p.email||'').toLowerCase().trim();
+        if(email && PROFESSORES.indexOf(email)===-1) PROFESSORES.push(email);
+      });
+    }).catch(function(){});
   }catch(e){console.error('Firebase:',e);}
   firebase.auth().onAuthStateChanged(function(user){
     if(user){
@@ -572,20 +603,9 @@ window.addEventListener('DOMContentLoaded', function(){
       document.getElementById('a_avemail').value=USER.email;
       carregarPerfil();
       mostrarAdmin();
-      // Go to role selection first
-      var papelSalvo = sessionStorage.getItem('papel_' + user.uid);
-      if (papelSalvo) {
-        aplicarPapel(papelSalvo);
-      } else {
-        // Show role selection
-        document.getElementById('nav').style.display = 'none';
-        document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
-        document.getElementById('s-role').classList.add('on');
-        var re = document.getElementById('role_user_email');
-        if (re) re.textContent = user.email;
-        var rl = document.getElementById('roleLogoImg');
-        if (rl) rl.src = LU;
-      }
+      // Auto-detect papel by email
+      var papel = isProfessor() ? 'prof' : 'aluno';
+      aplicarPapel(papel);
     }else{
       USER=null;
       document.getElementById('nav').style.display='none';
@@ -689,52 +709,33 @@ function aba(id){
 // ============================================================
 var PAPEL_ATUAL = null;
 
-function escolherPapel(papel) {
-  sessionStorage.setItem('papel_' + USER.key, papel);
-  aplicarPapel(papel);
-}
+// escolherPapel removed - role is automatic
 
 function aplicarPapel(papel) {
   PAPEL_ATUAL = papel;
   document.getElementById('nav').style.display = 'flex';
   var nav = document.getElementById('nav');
-
-  // Show/hide nav items based on role
   var btns = nav.querySelectorAll('button:not(.sair)');
-  btns.forEach(function(b){ b.style.display = 'none'; });
 
   if (papel === 'aluno') {
-    // Aluno: Início, Plano de Atividades, Meus Documentos (só avaliações suas)
+    // Aluno vê: Início, Plano de Atividades, Meus Documentos
+    btns.forEach(function(b){ b.style.display = 'none'; });
     btns[0].style.display = 'block'; // Início
     btns[2].style.display = 'block'; // Plano de Atividades
     btns[3].style.display = 'block'; // Meus Documentos
-    // Update home cards for student
     document.getElementById('ub_c').textContent = USER.email + ' · 🎓 Aluno';
   } else {
-    // Professor: tudo visível
+    // Professor vê tudo
     btns.forEach(function(b){ b.style.display = 'block'; });
     mostrarAdmin();
     document.getElementById('ub_c').textContent = USER.email + ' · 👨‍🏫 Professor';
-  }
-
-  // Update plano role if in plano section
-  if (papel === 'aluno') {
-    setPlanoRole('aluno');
   }
 
   aba('inicio');
   renderStats();
 }
 
-function trocarPapel() {
-  sessionStorage.removeItem('papel_' + USER.key);
-  PAPEL_ATUAL = null;
-  document.getElementById('nav').style.display = 'none';
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
-  document.getElementById('s-role').classList.add('on');
-  var re = document.getElementById('role_user_email');
-  if (re) re.textContent = USER.email;
-}
+// trocarPapel removed - role is automatic
 
 // ============================================================
 // LOGIN
@@ -1242,7 +1243,9 @@ function limA(){if(!confirm('Limpar formulário?'))return;novaAvaliacao();}
 // ADMIN
 // ============================================================
 async function carregarAdmin(){
-  if(ADMINS.indexOf(USER.key)===-1){aba('inicio');return;}
+  await carregarProfessoresDB();
+  adminTab('aval');
+    if(ADMINS.indexOf(USER.key)===-1){aba('inicio');return;}
   var lista=document.getElementById('admin_lista');
   lista.innerHTML='<div class="vz">Carregando...</div>';
   try{
@@ -1889,24 +1892,157 @@ aba = function(id) {
     var el=document.getElementById('s-plano');if(el)el.classList.add('on');
     document.querySelectorAll('nav button:not(.sair)').forEach(function(b){b.classList.remove('on');});
     window.scrollTo({top:0,behavior:'smooth'});
-    // Use global role if set, otherwise show selector
-    if (PAPEL_ATUAL === 'aluno') {
-      document.getElementById('plano_role_sel').style.display='none';
-      setPlanoRole('aluno');
-    } else if (PAPEL_ATUAL === 'prof') {
-      document.getElementById('plano_role_sel').style.display='none';
-      setPlanoRole('prof');
-    } else {
-      document.getElementById('plano_role_sel').style.display='block';
-      document.getElementById('plano_aluno').style.display='none';
-      document.getElementById('plano_prof').style.display='none';
-      planoRole = null;
-    }
+    setPlanoRole(PAPEL_ATUAL === 'prof' ? 'prof' : 'aluno');
     return;
   }
   _abaOriginal(id);
 };
 
+// ============================================================
+// GERENCIAR PROFESSORES (Admin)
+// ============================================================
+
+// Carrega lista de professores do Firebase e sincroniza com array local
+async function carregarProfessoresDB() {
+  try {
+    var snap = await DB.ref('config/professores').once('value');
+    var dados = snap.val() || {};
+    // Merge Firebase professors into local PROFESSORES array
+    Object.values(dados).forEach(function(p) {
+      var email = (p.email||'').toLowerCase().trim();
+      if (email && PROFESSORES.indexOf(email) === -1) {
+        PROFESSORES.push(email);
+      }
+    });
+    return dados;
+  } catch(e) { return {}; }
+}
+
+async function adicionarProfessor() {
+  var nome  = (document.getElementById('new_prof_nome').value  || '').trim();
+  var email = (document.getElementById('new_prof_email').value || '').trim().toLowerCase();
+  if (!nome || !email) { tk('Preencha nome e e-mail.','err'); return; }
+  if (!email.includes('@')) { tk('E-mail inválido.','err'); return; }
+  ldgOn('Cadastrando professor...');
+  try {
+    var key = email.replace(/[.#$\[\]]/g,'_');
+    await DB.ref('config/professores/' + key).set({
+      nome: nome, email: email,
+      cadastrado_por: USER.nome,
+      data: new Date().toISOString()
+    });
+    // Add to local array immediately
+    if (PROFESSORES.indexOf(email) === -1) PROFESSORES.push(email);
+    document.getElementById('new_prof_nome').value  = '';
+    document.getElementById('new_prof_email').value = '';
+    ldgOff();
+    tk('Professor cadastrado com sucesso!', 'ok');
+    renderListaProfessores();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function removerProfessor(key, email) {
+  if (!confirm('Remover ' + email + ' da lista de professores?')) return;
+  ldgOn('Removendo...');
+  try {
+    await DB.ref('config/professores/' + key).remove();
+    // Remove from local array
+    var idx = PROFESSORES.indexOf(email.toLowerCase());
+    if (idx > -1) PROFESSORES.splice(idx, 1);
+    ldgOff();
+    tk('Professor removido.', 'ok');
+    renderListaProfessores();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function renderListaProfessores() {
+  var lst = document.getElementById('lista_professores');
+  if (!lst) return;
+  lst.innerHTML = '<div class="vz">Carregando...</div>';
+  try {
+    var snap = await DB.ref('config/professores').once('value');
+    var dados = snap.val() || {};
+    var profs = Object.entries(dados);
+    if (!profs.length) {
+      lst.innerHTML = '<div class="vz">Nenhum professor cadastrado ainda.<br><span style="font-size:.8rem;color:#9ca3af">Os professores pré-configurados no código ainda têm acesso.</span></div>';
+      return;
+    }
+    lst.innerHTML = '';
+    profs.forEach(function(entry) {
+      var key = entry[0], p = entry[1];
+      var card = document.createElement('div');
+      card.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border:1.5px solid var(--grb);border-radius:9px;margin-bottom:8px;background:#fff;flex-wrap:wrap;gap:8px';
+      card.innerHTML =
+        '<div>' +
+        '<div style="font-size:.93rem;font-weight:700;color:var(--gre)">' + (p.nome||'') + '</div>' +
+        '<div style="font-size:.8rem;color:#4a5a6e">' + (p.email||'') + '</div>' +
+        '<div style="font-size:.73rem;color:#9ca3af;margin-top:2px">Cadastrado por ' + (p.cadastrado_por||'—') + ' em ' + (p.data||'').slice(0,10) + '</div>' +
+        '</div>';
+      var btn = document.createElement('button');
+      btn.style.cssText = 'background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit';
+      btn.textContent = 'Remover';
+      btn.onclick = (function(k, em){ return function(){ removerProfessor(k, em); }; })(key, p.email);
+      card.appendChild(btn);
+      lst.appendChild(card);
+    });
+    // Show fixed professors note
+    var note = document.createElement('div');
+    note.style.cssText = 'margin-top:12px;padding:10px 14px;background:#f0faf4;border-radius:8px;font-size:.8rem;color:#2d7a52;border:1px solid var(--grb)';
+    note.innerHTML = '📌 <strong>Professores fixos no sistema</strong> (não aparecem aqui mas têm acesso):<br>' +
+      PROFESSORES.filter(function(e){ return !Object.values(dados).some(function(p){ return p.email===e; }); }).join(', ') || 'Nenhum';
+    lst.appendChild(note);
+  } catch(e) {
+    lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>';
+  }
+}
+
+// ── Admin tabs ──
+function adminTab(tab) {
+  ['aval','profs','planos'].forEach(function(t) {
+    var panel = document.getElementById('adminTab_' + t);
+    var btn   = document.getElementById('atab_' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = t === tab ? 'var(--gr)' : 'transparent';
+      btn.style.color      = t === tab ? '#fff'      : 'var(--gr)';
+    }
+  });
+  if (tab === 'profs') renderListaProfessores();
+  if (tab === 'planos') carregarAdminPlanos();
+}
+
+async function carregarAdminPlanos() {
+  var lst = document.getElementById('admin_lista_planos');
+  if (!lst) return;
+  lst.innerHTML = '<div class="vz">Carregando...</div>';
+  try {
+    var snap = await DB.ref('estagio').once('value');
+    var todos = snap.val() || {};
+    var planos = [];
+    Object.keys(todos).forEach(function(uid) {
+      var ps = (todos[uid].planos) || {};
+      Object.values(ps).forEach(function(p) {
+        planos.push(Object.assign({}, p, {_uid: uid}));
+      });
+    });
+    planos.sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+    if (!planos.length) { lst.innerHTML = '<div class="vz">Nenhum plano encontrado.</div>'; return; }
+    lst.innerHTML = '';
+    planos.forEach(function(p) {
+      var card = document.createElement('div');
+      card.className = 'admin-card';
+      card.innerHTML =
+        '<h4>' + (p.nome||'Aluno') + ' | ' + (p.disciplina||'') + '</h4>' +
+        '<div class="meta">Local: ' + (p.local||'—') + ' | Status: ' + (p.status||'—') + ' | ' + (p.ts||'').slice(0,10) + '</div>';
+      var bPDF = document.createElement('button');
+      bPDF.className = 'btn bp'; bPDF.style.cssText = 'padding:5px 12px;font-size:.8rem;margin-top:6px';
+      bPDF.textContent = '📑 PDF';
+      bPDF.onclick = (function(pid, uid){ return function(){ gerarPDFPlanoProf(pid, uid); }; })(p.id, p._uid);
+      card.appendChild(bPDF);
+      lst.appendChild(card);
+    });
+  } catch(e) { lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>'; }
+}
 </script>
 
 <div id="ajuda-btn" onclick="toggleAjuda()">❓ AJUDA</div>
