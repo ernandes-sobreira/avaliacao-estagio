@@ -321,11 +321,16 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 
   <!-- Seletor de papel -->
   <div id="plano_role_sel" style="margin-bottom:18px">
-    <div class="card" style="padding:16px 20px">
-      <div style="font-size:.95rem;font-weight:700;color:var(--gre);margin-bottom:12px">Como você vai usar esta seção?</div>
+    <div class="card" style="padding:18px 22px">
+      <div style="font-size:1rem;font-weight:700;color:var(--gre);margin-bottom:6px">Plano de Atividades do Acadêmico</div>
+      <div style="font-size:.88rem;color:var(--cs);margin-bottom:14px">Escolha como deseja acessar esta seção:</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="btn bp" onclick="setPlanoRole('aluno')" style="flex:1;justify-content:center;gap:8px">🎓 Sou Aluno — submeter plano</button>
-        <button class="btn" style="background:#166534;color:#fff;flex:1;justify-content:center;gap:8px" onclick="setPlanoRole('prof')">👨‍🏫 Sou Professor — validar planos</button>
+        <button class="btn bp" onclick="setPlanoRole('aluno')" style="flex:1;justify-content:center;padding:13px;font-size:.95rem">
+          🎓 Sou Aluno<div style="font-size:.78rem;font-weight:400;margin-top:3px;opacity:.85">Preencher e submeter plano</div>
+        </button>
+        <button class="btn" style="background:#166534;color:#fff;flex:1;justify-content:center;padding:13px;font-size:.95rem" onclick="setPlanoRole('prof')">
+          👨‍🏫 Sou Professor<div style="font-size:.78rem;font-weight:400;margin-top:3px;opacity:.85">Revisar e validar planos</div>
+        </button>
       </div>
     </div>
   </div>
@@ -415,7 +420,7 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
       <div class="ctit">👨‍🏫 Validação de Planos de Atividades
         <span class="role-badge role-prof" style="margin-left:8px">Professor</span>
       </div>
-      <div style="font-size:.85rem;color:var(--cs);margin-bottom:14px">Planos submetidos pelos alunos com seu e-mail como professor responsável.</div>
+      <div id="prof_email_info" style="background:var(--grl);border:1.5px solid var(--grb);border-radius:8px;padding:10px 14px;font-size:.85rem;color:var(--gr);margin-bottom:14px">Planos submetidos pelos alunos que indicaram seu e-mail como professor responsável.</div>
       <div id="lista_planos_prof"><div class="vz">Carregando...</div></div>
     </div>
   </div>
@@ -1229,6 +1234,9 @@ function setPlanoRole(role) {
     preencherDadosAluno();
     renderListaPlanoAluno();
   } else {
+    // Show professor email in info banner
+    var info = document.getElementById('prof_email_info');
+    if (info && USER) info.innerHTML = 'Planos submetidos pelos alunos que informaram <strong>' + USER.email + '</strong> como professor responsável.';
     carregarPlanosProf();
   }
 }
@@ -1775,10 +1783,11 @@ aba = function(id) {
     document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
     var el=document.getElementById('s-plano');if(el)el.classList.add('on');
     document.querySelectorAll('nav button:not(.sair)').forEach(function(b){b.classList.remove('on');});
-    // reset role selector each time
+    // Show selector, hide both role panels
     document.getElementById('plano_role_sel').style.display='block';
     document.getElementById('plano_aluno').style.display='none';
     document.getElementById('plano_prof').style.display='none';
+    planoRole = null;
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
