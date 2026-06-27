@@ -119,6 +119,34 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 .ajuda-txt strong{color:var(--gr)}
 .al{padding:10px 15px;border-radius:8px;font-size:.88rem;margin:10px 0;font-weight:600;display:none}
 .al.err{background:#fee2e2;color:#7f1d1d;border:1.5px solid #fca5a5;display:block}
+
+/* ── PLANO DE ATIVIDADES ── */
+.role-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700}
+.role-aluno{background:#dbeafe;color:#1e40af}
+.role-prof{background:#dcfce7;color:#166534}
+.status-pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:700}
+.sp-rascunho{background:#f3f4f6;color:#374151}
+.sp-pendente{background:#fef3c7;color:#92400e}
+.sp-aprovado{background:#dcfce7;color:#166534}
+.sp-rejeitado{background:#fee2e2;color:#991b1b}
+.plano-card{border:1.5px solid var(--grb);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff;transition:border .2s}
+.plano-card:hover{border-color:var(--grm)}
+.plano-card h4{color:var(--gr);font-size:.95rem;margin-bottom:3px;font-weight:700}
+.plano-card .meta{font-size:.8rem;color:#4a5a6e;margin-bottom:8px}
+.ativ-row{display:grid;grid-template-columns:160px 120px 1fr;gap:10px;margin-bottom:10px;align-items:start}
+.ativ-row input,.ativ-row textarea{font-size:.88rem}
+@media(max-width:600px){.ativ-row{grid-template-columns:1fr}}
+.add-ativ-btn{background:var(--grl);border:1.5px dashed var(--grb);border-radius:7px;padding:8px;width:100%;cursor:pointer;font-size:.88rem;color:var(--grm);font-weight:700;margin-top:4px;font-family:inherit}
+.add-ativ-btn:hover{border-color:var(--grm);background:#d0ead8}
+.rem-ativ{background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:inherit;margin-top:4px}
+.rejeitar-box{background:#fee2e2;border:1.5px solid #fca5a5;border-radius:8px;padding:12px 14px;margin:10px 0}
+.rejeitar-box label{font-size:.8rem;font-weight:700;color:#7f1d1d}
+.timeline-row{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #f0f4f1;font-size:.85rem}
+.timeline-row:last-child{border-bottom:none}
+.tl-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.tl-txt{flex:1;color:#374151}
+.tl-time{font-size:.75rem;color:#9ca3af;white-space:nowrap}
+
 </style>
 </head>
 <body>
@@ -136,6 +164,7 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
   <nav id="nav" style="display:none">
     <button class="on" onclick="aba('inicio')">Início</button>
     <button onclick="novaAvaliacao()">Nova Avaliação</button>
+    <button onclick="aba('plano')">Plano de Atividades</button>
     <button onclick="aba('docs')">Meus Documentos</button>
     <button id="btn_admin" style="display:none" onclick="aba('admin')">&#128274; Admin</button>
     <button class="sair" onclick="sair()">Sair</button>
@@ -174,6 +203,7 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
   <div class="opcoes">
     <div class="ocard" onclick="novaAvaliacao()"><div class="oi">📋</div><h3>Nova Avaliação</h3><p>Preencher Anexo II e/ou Anexo III</p></div>
     <div class="ocard" onclick="aba('docs')"><div class="oi">📁</div><h3>Meus Documentos</h3><p>Ver, editar e baixar avaliações</p></div>
+    <div class="ocard" onclick="aba('plano')"><div class="oi">📋</div><h3>Plano de Atividades</h3><p>Submeter cronograma para o professor validar</p></div>
   </div>
   <div class="card"><div class="ctit">Resumo</div><div class="stats" id="stats"></div></div>
 </div>
@@ -284,6 +314,125 @@ main{max-width:940px;margin:24px auto;padding:0 14px 80px}
 </div>
 
 </main>
+
+
+<!-- ============ SCREEN PLANO ============ -->
+<div class="sec" id="s-plano">
+
+  <!-- Seletor de papel -->
+  <div id="plano_role_sel" style="margin-bottom:18px">
+    <div class="card" style="padding:16px 20px">
+      <div style="font-size:.95rem;font-weight:700;color:var(--gre);margin-bottom:12px">Como você vai usar esta seção?</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn bp" onclick="setPlanoRole('aluno')" style="flex:1;justify-content:center;gap:8px">🎓 Sou Aluno — submeter plano</button>
+        <button class="btn" style="background:#166534;color:#fff;flex:1;justify-content:center;gap:8px" onclick="setPlanoRole('prof')">👨‍🏫 Sou Professor — validar planos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALUNO: formulário de plano -->
+  <div id="plano_aluno" style="display:none">
+    <div class="card">
+      <div class="ctit">📋 Plano de Atividades do Acadêmico
+        <span class="role-badge role-aluno" style="margin-left:8px">🎓 Aluno</span>
+      </div>
+
+      <!-- Identificação do estagiário -->
+      <div style="font-size:.8rem;font-weight:700;color:var(--cs);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Identificação do Estagiário</div>
+      <div class="g g2">
+        <div class="f"><label>Nome completo <span class="r">*</span></label><input id="pl_nome" type="text" placeholder="Seu nome completo"/></div>
+        <div class="f"><label>E-mail <span class="r">*</span></label><input id="pl_email" type="email" placeholder="seu@unemat.br"/></div>
+      </div>
+      <div class="g g2">
+        <div class="f"><label>Telefone</label><input id="pl_tel" type="text" placeholder="(65) 9xxxx-xxxx"/></div>
+        <div class="f"><label>Curso <span class="r">*</span></label>
+          <select id="pl_curso">
+            <option value="">Selecione...</option>
+            <option>Licenciatura e Bacharelado em Ciências Biológicas</option>
+            <option>Bacharelado em Ciências Biológicas</option>
+            <option>Licenciatura em Ciências Biológicas</option>
+          </select>
+        </div>
+      </div>
+      <div class="g g2">
+        <div class="f"><label>Disciplina <span class="r">*</span></label>
+          <select id="pl_disciplina">
+            <option value="">Selecione...</option>
+            <option>Estágio Supervisionado do Bacharelado I</option>
+            <option>Estágio Supervisionado do Bacharelado II</option>
+            <option>Estágio Supervisionado da Licenciatura I</option>
+            <option>Estágio Supervisionado da Licenciatura II</option>
+          </select>
+        </div>
+        <div class="f"><label>E-mail do professor de estágio <span class="r">*</span></label><input id="pl_email_prof" type="email" placeholder="professor@unemat.br"/></div>
+      </div>
+
+      <!-- Campo de estágio -->
+      <div style="font-size:.8rem;font-weight:700;color:var(--cs);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">Identificação do Campo de Estágio</div>
+      <div class="g g2">
+        <div class="f"><label>Local do estágio <span class="r">*</span></label><input id="pl_local" type="text" placeholder="Nome do laboratório, empresa, escola..."/></div>
+        <div class="f"><label>Cidade</label><input id="pl_cidade" type="text" placeholder="Cáceres - MT"/></div>
+      </div>
+      <div class="g g2">
+        <div class="f"><label>Nome do supervisor(a) no campo <span class="r">*</span></label><input id="pl_supervisor" type="text" placeholder="Prof. Dr. ..."/></div>
+        <div class="f"><label>E-mail do supervisor</label><input id="pl_email_sup" type="email" placeholder="supervisor@email.com"/></div>
+      </div>
+      <div class="g g3">
+        <div class="f"><label>Período — Início <span class="r">*</span></label><input id="pl_ini" type="date"/></div>
+        <div class="f"><label>Período — Término <span class="r">*</span></label><input id="pl_fim" type="date"/></div>
+        <div class="f"><label>Carga horária total (h)</label><input id="pl_ch" type="number" min="0" placeholder="150"/></div>
+      </div>
+
+      <!-- Cronograma -->
+      <div style="font-size:.8rem;font-weight:700;color:var(--cs);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px">Cronograma de Atividades</div>
+      <div style="display:grid;grid-template-columns:160px 120px 1fr auto;gap:8px;margin-bottom:6px;font-size:.72rem;font-weight:700;color:var(--cs);text-transform:uppercase;padding:0 4px">
+        <span>Período</span><span>Carga (h)</span><span>Atividade</span><span></span>
+      </div>
+      <div id="pl_atividades_wrap"></div>
+      <button class="add-ativ-btn" onclick="addAtiv()">+ Adicionar atividade</button>
+
+      <div class="f" style="margin-top:14px"><label>Observações adicionais</label><textarea id="pl_obs" rows="3" placeholder="Informações complementares..."></textarea></div>
+
+      <div class="al" id="pl_al">Preencha todos os campos obrigatórios.</div>
+
+      <div class="bts">
+        <button class="btn" style="background:#374151;color:#fff" onclick="salvarPlano('rascunho')">💾 Salvar rascunho</button>
+        <button class="btn bp" onclick="salvarPlano('pendente')">📤 Submeter ao professor</button>
+        <button class="btn bs" onclick="limPlano()">Limpar</button>
+      </div>
+    </div>
+
+    <!-- Meus planos -->
+    <div class="card">
+      <div class="ctit">Meus Planos de Atividades</div>
+      <div id="lista_planos_aluno"><div class="vz">Nenhum plano salvo.</div></div>
+    </div>
+  </div>
+
+  <!-- PROFESSOR: validação de planos -->
+  <div id="plano_prof" style="display:none">
+    <div class="card">
+      <div class="ctit">👨‍🏫 Validação de Planos de Atividades
+        <span class="role-badge role-prof" style="margin-left:8px">Professor</span>
+      </div>
+      <div style="font-size:.85rem;color:var(--cs);margin-bottom:14px">Planos submetidos pelos alunos com seu e-mail como professor responsável.</div>
+      <div id="lista_planos_prof"><div class="vz">Carregando...</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: editar/validar plano (professor) -->
+<div id="modal_plano" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;overflow-y:auto;padding:20px">
+  <div style="background:#fff;border-radius:12px;max-width:800px;margin:0 auto;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <h3 style="color:var(--gre);font-size:1.05rem">📋 Plano de Atividades — Revisão do Professor</h3>
+      <button onclick="fecharModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#6b7280">✕</button>
+    </div>
+    <div id="modal_content"></div>
+    <div class="bts" style="margin-top:18px" id="modal_bts"></div>
+  </div>
+</div>
 
 <footer style="text-align:center;padding:18px 14px 28px;font-size:.78rem;color:#6b7a8d;border-top:1px solid var(--grb);margin-top:10px">
   <p style="margin-bottom:4px"><strong style="color:var(--gr)">Sistema de Avaliação de Estágio Curricular — Ciências Biológicas / UNEMAT Campus Cáceres</strong></p>
@@ -1063,6 +1212,551 @@ document.addEventListener('click',function(e){
   if(panel&&panel.classList.contains('open')&&!panel.contains(e.target)&&btn&&!btn.contains(e.target))
     panel.classList.remove('open');
 });
+// ============================================================
+// PLANO DE ATIVIDADES — MÓDULO COMPLETO
+// ============================================================
+var planoAtualId = null;
+var planoEditandoId = null;
+var atividadesCount = 0;
+var planoRole = null;
+
+function setPlanoRole(role) {
+  planoRole = role;
+  document.getElementById('plano_role_sel').style.display = 'none';
+  document.getElementById('plano_aluno').style.display = role === 'aluno' ? 'block' : 'none';
+  document.getElementById('plano_prof').style.display  = role === 'prof'  ? 'block' : 'none';
+  if (role === 'aluno') {
+    preencherDadosAluno();
+    renderListaPlanoAluno();
+  } else {
+    carregarPlanosProf();
+  }
+}
+
+function preencherDadosAluno() {
+  if (!USER) return;
+  var nome = document.getElementById('pl_nome');
+  var email = document.getElementById('pl_email');
+  if (nome && !nome.value) nome.value = USER.nome || '';
+  if (email && !email.value) email.value = USER.email || '';
+  if (!document.getElementById('pl_atividades_wrap').children.length) {
+    addAtiv(); addAtiv(); addAtiv();
+  }
+}
+
+function addAtiv(periodo, ch, desc) {
+  atividadesCount++;
+  var id = atividadesCount;
+  var wrap = document.getElementById('pl_atividades_wrap');
+  var row = document.createElement('div');
+  row.className = 'ativ-row';
+  row.id = 'ativ_' + id;
+  row.innerHTML =
+    '<div class="f"><input type="text" id="ativ_per_' + id + '" placeholder="Ex: 23/03 a 29/05/2026" value="' + (periodo||'') + '"/></div>' +
+    '<div class="f"><input type="number" id="ativ_ch_' + id + '" placeholder="horas" min="0" value="' + (ch||'') + '"/></div>' +
+    '<div class="f"><textarea id="ativ_desc_' + id + '" rows="2" placeholder="Descreva a atividade...">' + (desc||'') + '</textarea></div>' +
+    '<div><button class="rem-ativ" onclick="remAtiv(' + id + ')">✕</button></div>';
+  wrap.appendChild(row);
+}
+
+function remAtiv(id) {
+  var el = document.getElementById('ativ_' + id);
+  if (el) el.remove();
+}
+
+function coletarAtividades() {
+  var wrap = document.getElementById('pl_atividades_wrap');
+  var rows = wrap.querySelectorAll('.ativ-row');
+  var lista = [];
+  rows.forEach(function(row) {
+    var idN = row.id.replace('ativ_', '');
+    var per  = (document.getElementById('ativ_per_'  + idN) || {}).value || '';
+    var ch   = (document.getElementById('ativ_ch_'   + idN) || {}).value || '';
+    var desc = (document.getElementById('ativ_desc_' + idN) || {}).value || '';
+    if (per || ch || desc) lista.push({ periodo: per, carga: ch, descricao: desc });
+  });
+  return lista;
+}
+
+function coletarPlano() {
+  return {
+    nome:        g('pl_nome'),
+    email:       g('pl_email'),
+    tel:         g('pl_tel'),
+    curso:       g('pl_curso'),
+    disciplina:  g('pl_disciplina'),
+    email_prof:  g('pl_email_prof'),
+    local:       g('pl_local'),
+    cidade:      g('pl_cidade'),
+    supervisor:  g('pl_supervisor'),
+    email_sup:   g('pl_email_sup'),
+    ini:         fd(g('pl_ini')),
+    fim:         fd(g('pl_fim')),
+    ch:          g('pl_ch'),
+    obs:         g('pl_obs'),
+    atividades:  coletarAtividades(),
+  };
+}
+
+function validarPlano(d, paraSub) {
+  var obrig = ['nome','email','curso','disciplina','email_prof','local','supervisor'];
+  if (paraSub) obrig.push('ini','fim');
+  return obrig.every(function(k) { return d[k] && d[k].trim(); }) && d.atividades.length > 0;
+}
+
+async function salvarPlano(status) {
+  var d = coletarPlano();
+  if (status === 'pendente' && !validarPlano(d, true)) {
+    var al = document.getElementById('pl_al');
+    al.className = 'al err'; al.style.display = 'block';
+    setTimeout(function() { al.style.display = 'none'; al.className = 'al'; }, 4000);
+    return;
+  }
+  ldgOn('Salvando plano...');
+  try {
+    var id = planoEditandoId || uid();
+    planoAtualId = id; planoEditandoId = id;
+    var obj = Object.assign({}, d, {
+      id: id, status: status, ts: new Date().toISOString(),
+      uid_aluno: USER.key, nome_aluno: USER.nome, email_aluno: USER.email
+    });
+    await DB.ref('estagio/' + USER.key + '/planos/' + id).set(obj);
+    // Indexar por email do professor para ele achar
+    await DB.ref('planos_por_prof/' + btoa(d.email_prof).replace(/=/g,'') + '/' + id).set({
+      uid_aluno: USER.key, id: id, nome_aluno: USER.nome,
+      nome_estagiario: d.nome, disciplina: d.disciplina,
+      local: d.local, status: status, ts: obj.ts
+    });
+    ldgOff();
+    if (status === 'pendente') {
+      await notificarProfPlano(d, id);
+      tk('Plano submetido! Professor notificado por e-mail.', 'ok');
+    } else {
+      tk('Rascunho salvo!', 'ok');
+    }
+    renderListaPlanoAluno();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function notificarProfPlano(d, id) {
+  if (typeof emailjs === 'undefined') return;
+  try {
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      to_email: d.email_prof,
+      nome_estagiario: d.nome,
+      periodo: d.ini + ' a ' + d.fim,
+      nota_a2: '—', nota_a3: '—',
+      local: d.local, supervisor: d.supervisor,
+      avaliador: d.nome, cargo: d.disciplina,
+      data_aval: new Date().toLocaleDateString('pt-BR'),
+      comentarios: '📋 PLANO DE ATIVIDADES submetido pelo(a) aluno(a) ' + d.nome + ' para validação. Acesse o sistema para revisar e aprovar.',
+      link_sistema: 'https://ernandes-sobreira.github.io/avaliacao-estagio/',
+      name: d.nome, email: d.email
+    });
+  } catch(e) { console.warn('Email prof:', e); }
+}
+
+// ── Listar planos do aluno ──
+async function renderListaPlanoAluno() {
+  var lst = document.getElementById('lista_planos_aluno');
+  lst.innerHTML = '<div class="vz">Carregando...</div>';
+  try {
+    var snap = await DB.ref('estagio/' + USER.key + '/planos').once('value');
+    var dados = snap.val() || {};
+    var planos = Object.values(dados).sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+    if (!planos.length) { lst.innerHTML = '<div class="vz">Nenhum plano salvo.</div>'; return; }
+    lst.innerHTML = planos.map(function(p) {
+      var pill = statusPill(p.status);
+      var podeEditar = p.status === 'rascunho' || p.status === 'rejeitado';
+      var motivo = p.status === 'rejeitado' && p.motivo_rejeicao
+        ? '<div style="background:#fee2e2;border-radius:6px;padding:6px 10px;font-size:.8rem;color:#7f1d1d;margin-top:6px">💬 Motivo: ' + p.motivo_rejeicao + '</div>' : '';
+      return '<div class="plano-card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
+        '<div><h4>' + (p.disciplina||'Plano') + '</h4>' +
+        '<div class="meta">' + (p.local||'') + ' | ' + (p.ini||'') + ' a ' + (p.fim||'') + '</div>' +
+        motivo + '</div>' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + pill +
+        (podeEditar ? '<button class="btn bp" style="padding:4px 10px;font-size:.78rem" onclick="editarPlano('' + p.id + '')">Editar</button>' : '') +
+        '<button class="btn bg" style="padding:4px 10px;font-size:.78rem" onclick="gerarPDFPlano('' + p.id + '')">📑 PDF</button>' +
+        '<button style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.78rem;font-weight:700" onclick="deletarPlano('' + p.id + '')">✕</button>' +
+        '</div></div></div>';
+    }).join('');
+  } catch(e) { lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>'; }
+}
+
+// ── Professor: listar planos pelo e-mail ──
+async function carregarPlanosProf() {
+  var lst = document.getElementById('lista_planos_prof');
+  lst.innerHTML = '<div class="vz">Carregando planos...</div>';
+  if (!USER) return;
+  try {
+    var emailKey = btoa(USER.email).replace(/=/g,'');
+    var snap = await DB.ref('planos_por_prof/' + emailKey).once('value');
+    var refs = snap.val() || {};
+    var ids = Object.values(refs).sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
+    if (!ids.length) { lst.innerHTML = '<div class="vz">Nenhum plano submetido para seu e-mail ainda.</div>'; return; }
+    // Load full data for each
+    var planos = await Promise.all(ids.map(async function(ref) {
+      var s = await DB.ref('estagio/' + ref.uid_aluno + '/planos/' + ref.id).once('value');
+      return Object.assign({}, s.val()||{}, { _uid_aluno: ref.uid_aluno });
+    }));
+    lst.innerHTML = planos.map(function(p) {
+      var pill = statusPill(p.status);
+      return '<div class="plano-card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
+        '<div><h4>' + (p.nome||'Aluno') + '</h4>' +
+        '<div class="meta">' + (p.disciplina||'') + ' | ' + (p.local||'') + ' | Submetido: ' + (p.ts||'').slice(0,10) + '</div></div>' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + pill +
+        '<button class="btn bp" style="padding:4px 10px;font-size:.78rem" onclick="abrirModalPlano('' + p.id + '','' + (p._uid_aluno||p.uid_aluno) + '')">Revisar</button>' +
+        '<button class="btn bg" style="padding:4px 10px;font-size:.78rem" onclick="gerarPDFPlanoProf('' + p.id + '','' + (p._uid_aluno||p.uid_aluno) + '')">📑 PDF</button>' +
+        '</div></div></div>';
+    }).join('');
+  } catch(e) { lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>'; }
+}
+
+// ── Modal do professor ──
+async function abrirModalPlano(planoId, uidAluno) {
+  ldgOn('Carregando plano...');
+  try {
+    var snap = await DB.ref('estagio/' + uidAluno + '/planos/' + planoId).once('value');
+    var p = snap.val();
+    ldgOff();
+    if (!p) { tk('Plano não encontrado.','err'); return; }
+    var mc = document.getElementById('modal_content');
+    var mb = document.getElementById('modal_bts');
+
+    // Editable form
+    mc.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">' +
+      field('Nome do estagiário', 'mp_nome', p.nome) +
+      field('E-mail', 'mp_email', p.email) +
+      field('Curso', 'mp_curso', p.curso) +
+      field('Disciplina', 'mp_disc', p.disciplina) +
+      field('Local do estágio', 'mp_local', p.local) +
+      field('Supervisor no campo', 'mp_sup', p.supervisor) +
+      field('Início', 'mp_ini', p.ini) +
+      field('Término', 'mp_fim', p.fim) +
+      '</div>' +
+      '<div style="font-size:.8rem;font-weight:700;color:var(--cs);text-transform:uppercase;margin-bottom:8px">Cronograma de Atividades</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:14px">' +
+      '<thead><tr style="background:var(--gr);color:#fff"><th style="padding:6px 10px;text-align:left">Período</th><th style="padding:6px 10px;width:80px">Carga (h)</th><th style="padding:6px 10px;text-align:left">Atividade</th></tr></thead><tbody>' +
+      (p.atividades||[]).map(function(a,i){
+        return '<tr style="border-bottom:1px solid #e5e7eb">' +
+          '<td style="padding:5px 8px"><input id="mp_per_'+i+'" style="border:1px solid #d1d5db;border-radius:4px;padding:3px 6px;width:100%;font-size:.83rem" value="'+(a.periodo||'')+'"/></td>' +
+          '<td style="padding:5px 8px"><input id="mp_ch_'+i+'" type="number" style="border:1px solid #d1d5db;border-radius:4px;padding:3px 6px;width:70px;font-size:.83rem" value="'+(a.carga||'')+'"/></td>' +
+          '<td style="padding:5px 8px"><textarea id="mp_desc_'+i+'" rows="2" style="border:1px solid #d1d5db;border-radius:4px;padding:3px 6px;width:100%;font-size:.83rem;resize:vertical">'+(a.descricao||'')+'</textarea></td>' +
+          '</tr>';
+      }).join('') +
+      '</tbody></table>' +
+      '<div class="rejeitar-box" id="motivo_box" style="display:none">' +
+      '<label>Motivo da rejeição (será enviado ao aluno):</label>' +
+      '<textarea id="mp_motivo" rows="3" style="width:100%;margin-top:6px;border:1px solid #fca5a5;border-radius:6px;padding:8px;font-family:inherit;font-size:.88rem" placeholder="Explique o que precisa ser corrigido..."></textarea>' +
+      '</div>';
+
+    mb.innerHTML = '';
+
+    var btnAp = document.createElement('button');
+    btnAp.className = 'btn'; btnAp.style.cssText = 'background:#166534;color:#fff';
+    btnAp.innerHTML = '✅ Aprovar e salvar edições';
+    btnAp.onclick = function() { aprovarPlano(planoId, uidAluno, p.atividades ? p.atividades.length : 0); };
+    mb.appendChild(btnAp);
+
+    var btnRej = document.createElement('button');
+    btnRej.className = 'btn'; btnRej.style.cssText = 'background:#dc2626;color:#fff';
+    btnRej.innerHTML = '❌ Rejeitar';
+    btnRej.onclick = function() {
+      var box = document.getElementById('motivo_box');
+      if (box.style.display === 'none') { box.style.display = 'block'; btnRej.textContent = '❌ Confirmar rejeição'; }
+      else { rejeitarPlano(planoId, uidAluno); }
+    };
+    mb.appendChild(btnRej);
+
+    var btnPDF = document.createElement('button');
+    btnPDF.className = 'btn bp';
+    btnPDF.innerHTML = '📑 Gerar PDF';
+    btnPDF.onclick = function() { gerarPDFPlanoProf(planoId, uidAluno); };
+    mb.appendChild(btnPDF);
+
+    document.getElementById('modal_plano').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+function field(lbl, id, val) {
+  return '<div class="f"><label>' + lbl + '</label><input id="' + id + '" value="' + (val||'').replace(/"/g,'&quot;') + '"/></div>';
+}
+
+function fecharModal() {
+  document.getElementById('modal_plano').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function coletarModalAtivs(n) {
+  var lista = [];
+  for (var i = 0; i < n; i++) {
+    var per  = (document.getElementById('mp_per_'+i)||{}).value  || '';
+    var ch   = (document.getElementById('mp_ch_'+i)||{}).value   || '';
+    var desc = (document.getElementById('mp_desc_'+i)||{}).value || '';
+    lista.push({ periodo: per, carga: ch, descricao: desc });
+  }
+  return lista;
+}
+
+function gv(id) { var el=document.getElementById(id); return el?el.value:''; }
+
+async function aprovarPlano(planoId, uidAluno, nAtiv) {
+  ldgOn('Aprovando...');
+  try {
+    var updates = {
+      nome: gv('mp_nome'), email: gv('mp_email'),
+      curso: gv('mp_curso'), disciplina: gv('mp_disc'),
+      local: gv('mp_local'), supervisor: gv('mp_sup'),
+      ini: gv('mp_ini'), fim: gv('mp_fim'),
+      atividades: coletarModalAtivs(nAtiv),
+      status: 'aprovado',
+      aprovado_por: USER.nome,
+      data_aprovacao: new Date().toISOString(),
+      motivo_rejeicao: null
+    };
+    await DB.ref('estagio/' + uidAluno + '/planos/' + planoId).update(updates);
+    var emailKey = btoa(gv('mp_email') || '').replace(/=/g,'');
+    await DB.ref('planos_por_prof/' + btoa(USER.email).replace(/=/g,'') + '/' + planoId).update({ status: 'aprovado' });
+    fecharModal();
+    ldgOff();
+    tk('Plano aprovado! Aluno será notificado.', 'ok');
+    // Notify student
+    try {
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        to_email: gv('mp_email'),
+        nome_estagiario: gv('mp_nome'),
+        periodo: gv('mp_ini') + ' a ' + gv('mp_fim'),
+        nota_a2: '—', nota_a3: '—',
+        local: gv('mp_local'), supervisor: gv('mp_sup'),
+        avaliador: USER.nome, cargo: 'Professor(a) de Estágio',
+        data_aval: new Date().toLocaleDateString('pt-BR'),
+        comentarios: '✅ Seu Plano de Atividades foi APROVADO por ' + USER.nome + '. Baixe o PDF pelo sistema.',
+        link_sistema: 'https://ernandes-sobreira.github.io/avaliacao-estagio/',
+        name: USER.nome, email: USER.email
+      });
+    } catch(e2) { console.warn('Email aluno aprovação:', e2); }
+    carregarPlanosProf();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+async function rejeitarPlano(planoId, uidAluno) {
+  var motivo = (document.getElementById('mp_motivo')||{}).value || '';
+  if (!motivo.trim()) { tk('Informe o motivo da rejeição.', 'err'); return; }
+  ldgOn('Rejeitando...');
+  try {
+    await DB.ref('estagio/' + uidAluno + '/planos/' + planoId).update({
+      status: 'rejeitado', motivo_rejeicao: motivo,
+      rejeitado_por: USER.nome, data_rejeicao: new Date().toISOString()
+    });
+    await DB.ref('planos_por_prof/' + btoa(USER.email).replace(/=/g,'') + '/' + planoId).update({ status: 'rejeitado' });
+    fecharModal(); ldgOff();
+    tk('Plano rejeitado. Aluno notificado.', 'ok');
+    try {
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        to_email: gv('mp_email') || uidAluno,
+        nome_estagiario: gv('mp_nome'),
+        periodo: '—', nota_a2: '—', nota_a3: '—',
+        local: gv('mp_local')||'', supervisor: gv('mp_sup')||'',
+        avaliador: USER.nome, cargo: 'Professor(a) de Estágio',
+        data_aval: new Date().toLocaleDateString('pt-BR'),
+        comentarios: '❌ Seu Plano de Atividades foi REJEITADO. Motivo: ' + motivo + '. Corrija e resubmeta.',
+        link_sistema: 'https://ernandes-sobreira.github.io/avaliacao-estagio/',
+        name: USER.nome, email: USER.email
+      });
+    } catch(e2) { console.warn('Email aluno rejeição:', e2); }
+    carregarPlanosProf();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message, 'err'); }
+}
+
+// ── Gerar PDF do plano (ALUNO) ──
+async function gerarPDFPlano(planoId) {
+  ldgOn('Gerando PDF...');
+  try {
+    var snap = await DB.ref('estagio/' + USER.key + '/planos/' + planoId).once('value');
+    var p = snap.val(); if (!p) { ldgOff(); return; }
+    abrirPDFPlano(p);
+    ldgOff();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message,'err'); }
+}
+
+// ── Gerar PDF do plano (PROFESSOR) ──
+async function gerarPDFPlanoProf(planoId, uidAluno) {
+  ldgOn('Gerando PDF...');
+  try {
+    var snap = await DB.ref('estagio/' + uidAluno + '/planos/' + planoId).once('value');
+    var p = snap.val(); if (!p) { ldgOff(); return; }
+    abrirPDFPlano(p);
+    ldgOff();
+  } catch(e) { ldgOff(); tk('Erro: ' + e.message,'err'); }
+}
+
+function abrirPDFPlano(p) {
+  var hashId = 'PL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  var ativRows = (p.atividades||[]).map(function(a) {
+    return '<tr><td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:9pt">' + (a.periodo||'—') + '</td>' +
+      '<td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:9pt;font-weight:700">' + (a.carga||'—') + '</td>' +
+      '<td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:9pt">' + (a.descricao||'') + '</td></tr>';
+  }).join('');
+
+  var statusLabel = {rascunho:'Rascunho',pendente:'Aguardando validação',aprovado:'✅ Aprovado',rejeitado:'❌ Rejeitado'};
+  var statusColor = {rascunho:'#6b7280',pendente:'#92400e',aprovado:'#166534',rejeitado:'#991b1b'};
+  var stBg = {rascunho:'#f3f4f6',pendente:'#fef3c7',aprovado:'#dcfce7',rejeitado:'#fee2e2'};
+
+  var html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">' +
+    '<title>Plano de Atividades — ' + (p.nome||'') + '</title>' +
+    '<style>' +
+    '*{box-sizing:border-box;margin:0;padding:0}' +
+    'body{font-family:Arial,sans-serif;color:#111;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+    '.pg{max-width:720px;margin:0 auto;padding:14mm 16mm}' +
+    '.hdr{text-align:center;border-bottom:3px solid #1a5c3a;padding-bottom:10px;margin-bottom:14px}' +
+    '.hdr p{margin:1px 0;font-size:8pt;font-weight:700;color:#1a5c3a}' +
+    'h2{font-size:12pt;font-weight:700;text-align:center;margin:10px 0 14px;color:#1a2332}' +
+    '.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid #d1fae5;border-radius:8px;overflow:hidden;margin-bottom:14px}' +
+    '.id-cell{padding:7px 12px;border-right:1px solid #d1fae5;border-bottom:1px solid #d1fae5}' +
+    '.id-cell:nth-child(2n){border-right:none}' +
+    '.id-cell:nth-last-child(-n+2){border-bottom:none}' +
+    '.id-lbl{font-size:7pt;color:#059669;font-weight:700;text-transform:uppercase;margin-bottom:2px}' +
+    '.id-val{font-size:9.5pt;font-weight:600;color:#111}' +
+    '.sec-title{font-size:9pt;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.5px;border-left:3px solid #22c55e;padding-left:8px;margin:12px 0 8px}' +
+    'table.cron{width:100%;border-collapse:collapse;border:1.5px solid #d1fae5;border-radius:7px;overflow:hidden}' +
+    'table.cron thead tr{background:#166534}' +
+    'table.cron thead th{color:#fff;padding:7px 10px;font-size:8.5pt;font-weight:700;text-align:left}' +
+    'table.cron thead th:nth-child(2){text-align:center;width:80px}' +
+    '.status-box{display:inline-block;padding:3px 14px;border-radius:20px;font-size:9pt;font-weight:700;margin-bottom:10px}' +
+    '.sig-area{margin-top:20px;border-top:2px dashed #d1fae5;padding-top:12px}' +
+    '.sig-blk{display:inline-block;text-align:center;margin-right:40px;margin-top:10px}' +
+    '.sig-line{border-bottom:1.5px solid #333;width:220px;height:28px;margin-bottom:4px}' +
+    '.sig-nome{font-size:9pt;font-weight:700}' +
+    '.sig-cargo{font-size:8pt;color:#4b5563}' +
+    '.doc-footer{margin-top:16px;padding:5px 10px;background:#f9fafb;border-radius:5px;font-size:6.5pt;color:#9ca3af;text-align:center;font-family:monospace}' +
+    '@page{margin:12mm}@media print{body{background:#fff}.pg{padding:8mm 10mm}}' +
+    '</style></head><body><div class="pg">' +
+    '<div class="hdr">' +
+    '<p>GOVERNO DO ESTADO DE MATO GROSSO · SECRETARIA DE ESTADO DE CIÊNCIA E TECNOLOGIA</p>' +
+    '<p>UNIVERSIDADE DO ESTADO DE MATO GROSSO — UNEMAT</p>' +
+    '<p>CAMPUS UNIVERSITÁRIO DE CÁCERES · BACHARELADO EM CIÊNCIAS BIOLÓGICAS · ESTÁGIO CURRICULAR SUPERVISIONADO</p>' +
+    '</div>' +
+    '<h2>PLANO DE ATIVIDADES DO ACADÊMICO</h2>' +
+    '<div style="margin-bottom:10px"><span class="status-box" style="background:' + (stBg[p.status]||'#f3f4f6') + ';color:' + (statusColor[p.status]||'#374151') + ';border:1.5px solid currentColor">' + (statusLabel[p.status]||p.status) + '</span></div>' +
+    // Identification grid
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">' +
+    '<div><div style="font-size:8.5pt;font-weight:700;color:#1a5c3a;border-bottom:2px solid #d1fae5;padding-bottom:4px;margin-bottom:8px">IDENTIFICAÇÃO DO ESTAGIÁRIO</div>' +
+    iRow('Nome completo', p.nome) + iRow('Telefone', p.tel) + iRow('E-mail', p.email) +
+    iRow('Curso', p.curso) + iRow('Disciplina', p.disciplina) + iRow('Professor de estágio', p.email_prof) +
+    '</div>' +
+    '<div><div style="font-size:8.5pt;font-weight:700;color:#1a5c3a;border-bottom:2px solid #d1fae5;padding-bottom:4px;margin-bottom:8px">IDENTIFICAÇÃO DO CAMPO DE ESTÁGIO</div>' +
+    iRow('Local do estágio', p.local) + iRow('Cidade', p.cidade) +
+    iRow('E-mail do supervisor', p.email_sup) + iRow('Nome do supervisor(a)', p.supervisor) +
+    iRow('Período', (p.ini||'') + ' a ' + (p.fim||'')) + iRow('Carga horária', (p.ch||'') + ' h') +
+    '</div></div>' +
+    '<div class="sec-title">Cronograma das Atividades a Serem Desenvolvidas</div>' +
+    '<table class="cron"><thead><tr>' +
+    '<th>Data ou Período</th><th>Carga (h)</th><th>Atividade</th>' +
+    '</tr></thead><tbody>' + ativRows + '</tbody></table>' +
+    (p.obs ? '<div style="margin-top:10px;font-size:9pt;color:#374151"><strong>Observações:</strong> ' + p.obs + '</div>' : '') +
+    '<div class="sig-area">' +
+    '<div style="font-size:9pt;color:#374151;margin-bottom:10px">Cáceres - MT, ' + new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}) + '</div>' +
+    '<div class="sig-blk"><div class="sig-line"></div><div class="sig-nome">' + (p.email_prof||'Professor(a) de Estágio') + '</div><div class="sig-cargo">Professor(a) Supervisor(a) de Estágio</div></div>' +
+    '<div class="sig-blk"><div class="sig-line"></div><div class="sig-nome">' + (p.supervisor||'Supervisor(a) de Campo') + '</div><div class="sig-cargo">Supervisor(a) designado(a) pela instituição campo</div></div>' +
+    '<div class="sig-blk"><div class="sig-line"></div><div class="sig-nome">' + (p.nome||'Estagiário(a)') + '</div><div class="sig-cargo">Estagiário(a)</div></div>' +
+    '</div>' +
+    '<div class="doc-footer">ID: ' + hashId + ' · Gerado em: ' + new Date().toLocaleString('pt-BR') + ' · Para assinatura digital: assinador.iti.br</div>' +
+    '</div></body></html>';
+
+  var win = window.open('', '_blank');
+  if (win) { win.document.write(html); win.document.close(); setTimeout(function(){win.print();},600); }
+  else {
+    var blob = new Blob([html],{type:'text/html;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href=url; a.download='Plano_Atividades_'+(p.nome||'').replace(/\s+/g,'_')+'.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    tk('HTML baixado. Abra e imprima para salvar como PDF.','inf');
+  }
+}
+
+function iRow(lbl, val) {
+  return '<div style="margin-bottom:5px"><div style="font-size:7pt;color:#6b7280;font-weight:700;text-transform:uppercase">' + lbl + '</div>' +
+    '<div style="font-size:9pt;font-weight:600;color:#111">' + (val||'—') + '</div></div>';
+}
+
+function statusPill(s) {
+  var labels = {rascunho:'Rascunho',pendente:'⏳ Aguardando',aprovado:'✅ Aprovado',rejeitado:'❌ Rejeitado'};
+  var colors = {rascunho:'sp-rascunho',pendente:'sp-pendente',aprovado:'sp-aprovado',rejeitado:'sp-rejeitado'};
+  return '<span class="status-pill ' + (colors[s]||'sp-rascunho') + '">' + (labels[s]||s) + '</span>';
+}
+
+async function editarPlano(planoId) {
+  ldgOn('Carregando...');
+  try {
+    var snap = await DB.ref('estagio/' + USER.key + '/planos/' + planoId).once('value');
+    var p = snap.val(); if (!p) { ldgOff(); return; }
+    planoEditandoId = planoId;
+    function sv(id,v){var e=document.getElementById(id);if(e)e.value=v||'';}
+    sv('pl_nome',p.nome);sv('pl_email',p.email);sv('pl_tel',p.tel);
+    sv('pl_curso',p.curso);sv('pl_disciplina',p.disciplina);sv('pl_email_prof',p.email_prof);
+    sv('pl_local',p.local);sv('pl_cidade',p.cidade);sv('pl_supervisor',p.supervisor);
+    sv('pl_email_sup',p.email_sup);sv('pl_ch',p.ch);sv('pl_obs',p.obs);
+    function dr(d){if(!d||d.indexOf('/')<0)return d||'';var pts=d.split('/');return pts.length===3?pts[2]+'-'+pts[1]+'-'+pts[0]:d;}
+    sv('pl_ini',dr(p.ini));sv('pl_fim',dr(p.fim));
+    // Rebuild atividades
+    document.getElementById('pl_atividades_wrap').innerHTML='';
+    atividadesCount=0;
+    (p.atividades||[]).forEach(function(a){addAtiv(a.periodo,a.carga,a.descricao);});
+    if (!p.atividades||!p.atividades.length) addAtiv();
+    ldgOff();
+    window.scrollTo({top:document.getElementById('s-plano').offsetTop-80,behavior:'smooth'});
+    tk('Editando plano. Resubmeta para o professor quando corrigir.','inf');
+  } catch(e) { ldgOff(); tk('Erro: '+e.message,'err'); }
+}
+
+async function deletarPlano(planoId) {
+  if (!confirm('Excluir este plano permanentemente?')) return;
+  ldgOn('Excluindo...');
+  try {
+    var snap = await DB.ref('estagio/'+USER.key+'/planos/'+planoId).once('value');
+    var p = snap.val()||{};
+    await DB.ref('estagio/'+USER.key+'/planos/'+planoId).remove();
+    if (p.email_prof) {
+      var ek = btoa(p.email_prof).replace(/=/g,'');
+      await DB.ref('planos_por_prof/'+ek+'/'+planoId).remove();
+    }
+    ldgOff(); tk('Plano excluído.','ok'); renderListaPlanoAluno();
+  } catch(e){ ldgOff(); tk('Erro: '+e.message,'err'); }
+}
+
+function limPlano() {
+  if (!confirm('Limpar o formulário?')) return;
+  planoEditandoId=null;
+  ['pl_nome','pl_email','pl_tel','pl_curso','pl_disciplina','pl_email_prof',
+   'pl_local','pl_cidade','pl_supervisor','pl_email_sup','pl_ini','pl_fim','pl_ch','pl_obs'].forEach(function(id){
+    var e=document.getElementById(id);if(e)e.value='';
+  });
+  document.getElementById('pl_atividades_wrap').innerHTML='';
+  atividadesCount=0;
+  addAtiv();addAtiv();addAtiv();
+  preencherDadosAluno();
+}
+// ── Overwrite aba() to handle plano ──
+var _abaOriginal = aba;
+aba = function(id) {
+  if (id === 'plano') {
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
+    var el=document.getElementById('s-plano');if(el)el.classList.add('on');
+    document.querySelectorAll('nav button:not(.sair)').forEach(function(b){b.classList.remove('on');});
+    // reset role selector each time
+    document.getElementById('plano_role_sel').style.display='block';
+    document.getElementById('plano_aluno').style.display='none';
+    document.getElementById('plano_prof').style.display='none';
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  _abaOriginal(id);
+};
+
 </script>
 
 <div id="ajuda-btn" onclick="toggleAjuda()">❓ AJUDA</div>
