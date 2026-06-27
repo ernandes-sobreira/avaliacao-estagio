@@ -584,14 +584,7 @@ window.addEventListener('DOMContentLoaded', function(){
     firebase.initializeApp(FIREBASE_CONFIG);
     DB=firebase.database();
     if(typeof emailjs!=='undefined') emailjs.init(EMAILJS_KEY);
-    // Pre-load professors from DB so isProfessor() works correctly on login
-    DB.ref('config/professores').once('value').then(function(snap){
-      var dados = snap.val() || {};
-      Object.values(dados).forEach(function(p){
-        var email = (p.email||'').toLowerCase().trim();
-        if(email && PROFESSORES.indexOf(email)===-1) PROFESSORES.push(email);
-      });
-    }).catch(function(){});
+    // Professors loaded after auth (in onAuthStateChanged)
   }catch(e){console.error('Firebase:',e);}
   firebase.auth().onAuthStateChanged(function(user){
     if(user){
@@ -603,9 +596,20 @@ window.addEventListener('DOMContentLoaded', function(){
       document.getElementById('a_avemail').value=USER.email;
       carregarPerfil();
       mostrarAdmin();
-      // Auto-detect papel by email
-      var papel = isProfessor() ? 'prof' : 'aluno';
-      aplicarPapel(papel);
+      // MUST load professors from DB first, THEN detect role
+      DB.ref('config/professores').once('value').then(function(snap){
+        var dados = snap.val() || {};
+        Object.values(dados).forEach(function(p){
+          var email = (p.email||'').toLowerCase().trim();
+          if(email && PROFESSORES.indexOf(email)===-1) PROFESSORES.push(email);
+        });
+        var papel = isProfessor() ? 'prof' : 'aluno';
+        aplicarPapel(papel);
+      }).catch(function(){
+        // If DB read fails, fallback to local list
+        var papel = isProfessor() ? 'prof' : 'aluno';
+        aplicarPapel(papel);
+      });
     }else{
       USER=null;
       document.getElementById('nav').style.display='none';
