@@ -1365,26 +1365,43 @@ async function renderListaPlanoAluno() {
     var dados = snap.val() || {};
     var planos = Object.values(dados).sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
     if (!planos.length) { lst.innerHTML = '<div class="vz">Nenhum plano salvo.</div>'; return; }
-    lst.innerHTML = planos.map(function(p) {
-      var pill = statusPill(p.status);
+    lst.innerHTML = '';
+    planos.forEach(function(p) {
+      var card = document.createElement('div');
+      card.className = 'plano-card';
       var podeEditar = p.status === 'rascunho' || p.status === 'rejeitado';
-      var motivo = p.status === 'rejeitado' && p.motivo_rejeicao
+      var motivoHtml = (p.status === 'rejeitado' && p.motivo_rejeicao)
         ? '<div style="background:#fee2e2;border-radius:6px;padding:6px 10px;font-size:.8rem;color:#7f1d1d;margin-top:6px">💬 Motivo: ' + p.motivo_rejeicao + '</div>' : '';
-      return '<div class="plano-card">' +
+      card.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
-        '<div><h4>' + (p.disciplina||'Plano') + '</h4>' +
+        '<div style="flex:1"><h4>' + (p.disciplina||'Plano') + '</h4>' +
         '<div class="meta">' + (p.local||'') + ' | ' + (p.ini||'') + ' a ' + (p.fim||'') + '</div>' +
-        motivo + '</div>' +
-        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + pill +
-        (podeEditar ? '<button class="btn bp" style="padding:4px 10px;font-size:.78rem" onclick="editarPlano('' + p.id + '')">Editar</button>' : '') +
-        '<button class="btn bg" style="padding:4px 10px;font-size:.78rem" onclick="gerarPDFPlano('' + p.id + '')">📑 PDF</button>' +
-        '<button style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.78rem;font-weight:700" onclick="deletarPlano('' + p.id + '')">✕</button>' +
-        '</div></div></div>';
-    }).join('');
+        motivoHtml + '</div>' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + statusPill(p.status) + '</div>' +
+        '</div>';
+      var bts = card.querySelector('div[style*="gap:6px"]');
+      if (podeEditar) {
+        var bEdit = document.createElement('button');
+        bEdit.className = 'btn bp'; bEdit.style.cssText = 'padding:4px 10px;font-size:.78rem';
+        bEdit.textContent = 'Editar';
+        bEdit.onclick = (function(pid){ return function(){ editarPlano(pid); }; })(p.id);
+        bts.appendChild(bEdit);
+      }
+      var bPDF = document.createElement('button');
+      bPDF.className = 'btn bg'; bPDF.style.cssText = 'padding:4px 10px;font-size:.78rem';
+      bPDF.textContent = '📑 PDF';
+      bPDF.onclick = (function(pid){ return function(){ gerarPDFPlano(pid); }; })(p.id);
+      bts.appendChild(bPDF);
+      var bDel = document.createElement('button');
+      bDel.style.cssText = 'background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:.78rem;font-weight:700';
+      bDel.textContent = '✕';
+      bDel.onclick = (function(pid){ return function(){ deletarPlano(pid); }; })(p.id);
+      bts.appendChild(bDel);
+      lst.appendChild(card);
+    });
   } catch(e) { lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>'; }
 }
 
-// ── Professor: listar planos pelo e-mail ──
 async function carregarPlanosProf() {
   var lst = document.getElementById('lista_planos_prof');
   lst.innerHTML = '<div class="vz">Carregando planos...</div>';
@@ -1395,22 +1412,33 @@ async function carregarPlanosProf() {
     var refs = snap.val() || {};
     var ids = Object.values(refs).sort(function(a,b){ return (b.ts||'').localeCompare(a.ts||''); });
     if (!ids.length) { lst.innerHTML = '<div class="vz">Nenhum plano submetido para seu e-mail ainda.</div>'; return; }
-    // Load full data for each
     var planos = await Promise.all(ids.map(async function(ref) {
       var s = await DB.ref('estagio/' + ref.uid_aluno + '/planos/' + ref.id).once('value');
       return Object.assign({}, s.val()||{}, { _uid_aluno: ref.uid_aluno });
     }));
-    lst.innerHTML = planos.map(function(p) {
-      var pill = statusPill(p.status);
-      return '<div class="plano-card">' +
+    lst.innerHTML = '';
+    planos.forEach(function(p) {
+      var card = document.createElement('div');
+      card.className = 'plano-card';
+      card.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">' +
-        '<div><h4>' + (p.nome||'Aluno') + '</h4>' +
+        '<div style="flex:1"><h4>' + (p.nome||'Aluno') + '</h4>' +
         '<div class="meta">' + (p.disciplina||'') + ' | ' + (p.local||'') + ' | Submetido: ' + (p.ts||'').slice(0,10) + '</div></div>' +
-        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + pill +
-        '<button class="btn bp" style="padding:4px 10px;font-size:.78rem" onclick="abrirModalPlano('' + p.id + '','' + (p._uid_aluno||p.uid_aluno) + '')">Revisar</button>' +
-        '<button class="btn bg" style="padding:4px 10px;font-size:.78rem" onclick="gerarPDFPlanoProf('' + p.id + '','' + (p._uid_aluno||p.uid_aluno) + '')">📑 PDF</button>' +
-        '</div></div></div>';
-    }).join('');
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + statusPill(p.status) + '</div>' +
+        '</div>';
+      var bts = card.querySelector('div[style*="gap:6px"]');
+      var bRev = document.createElement('button');
+      bRev.className = 'btn bp'; bRev.style.cssText = 'padding:4px 10px;font-size:.78rem';
+      bRev.textContent = 'Revisar';
+      bRev.onclick = (function(pid, uid){ return function(){ abrirModalPlano(pid, uid); }; })(p.id, p._uid_aluno||p.uid_aluno);
+      bts.appendChild(bRev);
+      var bPDF = document.createElement('button');
+      bPDF.className = 'btn bg'; bPDF.style.cssText = 'padding:4px 10px;font-size:.78rem';
+      bPDF.textContent = '📑 PDF';
+      bPDF.onclick = (function(pid, uid){ return function(){ gerarPDFPlanoProf(pid, uid); }; })(p.id, p._uid_aluno||p.uid_aluno);
+      bts.appendChild(bPDF);
+      lst.appendChild(card);
+    });
   } catch(e) { lst.innerHTML = '<div class="vz" style="color:#991b1b">Erro: ' + e.message + '</div>'; }
 }
 
